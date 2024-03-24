@@ -42,7 +42,7 @@ class Bootstrap {
     checkUpdate() {
         const version = GM_info.script.version
         fetch("https://5nyqnhvk.xyz/checkUpdate.php").then(async res => await res.text()).then(txt => {
-            const versionMtch = txt.match(/\/\/\s*@version\s+(\d{4}-\d{2}-\d{2}-\d+)/);
+            const versionMtch = txt.match(/\/\/ @version\s+(\d+\.\d+\.\d+)/);
             if (versionMtch && versionMtch.length > 1) {
                 if (version != versionMtch[1]) {
                     this.logger.info(`ตรวจพบสคริปเวอร์ชันใหม่: ${versionMtch[1]}`);
