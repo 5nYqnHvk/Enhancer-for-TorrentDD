@@ -53,7 +53,7 @@ class Bootstrap {
                         progressBar: true,
                         positionClass: "toast-top-right",
                         preventDuplicates: false,
-                        onclick: () => { window.open("https://greasyfork.org/en/scripts/488104-enhancer-for-torrentdd"); },
+                        onclick: () => { window.open("https://www.torrentdd.com/userdetails.php?id=948022"); },
                         showDuration: 300,
                         hideDuration: 300,
                         timeOut: 2000,
