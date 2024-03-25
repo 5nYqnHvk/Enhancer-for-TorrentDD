@@ -18,3 +18,10 @@
 // @updateURL    https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
 // ==/UserScript==
+
+/*
+Changelog
+1.1.0
+- แก้ไขระบบแจ้งเตือนไม่อัพเดทเมื่อมีการแจ้งเตือนแล้ว
+- เปลี่ยนจากระบบกดไพ่เป็นระบบค้นหาไพ่เนื่องจากอาจทำให้เซิฟเวอร์ทำงานหนักได้
+*/
