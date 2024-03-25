@@ -53,7 +53,7 @@ class Bootstrap {
                         progressBar: true,
                         positionClass: "toast-top-right",
                         preventDuplicates: false,
-                        onclick: () => { window.open("https://www.torrentdd.com/userdetails.php?id=948022"); },
+                        onclick: () => { window.open("https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js"); },
                         showDuration: 300,
                         hideDuration: 300,
                         timeOut: 2000,
@@ -87,8 +87,8 @@ class Bootstrap {
             case "/card_vs_player.php":
                 if (getLocation().search == "?mod=create") {
                     this.placeCard.initalizeUi();
-                } else if (getLocation().search == "") {
-                    // this.betCard.initalizeUi();
+                } else if (getLocation().search == "" || getLocation().search.includes("?page=")) {
+                    this.betCard.initalizeUi();
                 }
                 break;
         }
