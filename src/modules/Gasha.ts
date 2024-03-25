@@ -151,6 +151,7 @@ class Gasha {
                     GM_setValue('ticketNotificationData', {
                         time: Date.now()
                     });
+                    this.notificationData = GM_getValue('ticketNotificationData', {});
                     break;
                 case 'error-1':
                     this.Swal('Error!', 'คุณจะต้องปล่อยไฟล์ 5 ไฟล์ขึ้นไป และ Connect มากว่า 3 ชั่วโมง', 'error');
@@ -207,6 +208,7 @@ class Gasha {
                     GM_setValue('ticketNotificationData', {
                         time: Date.now(),
                     });
+                    this.notificationData = GM_getValue('ticketNotificationData', {});
                 }
             }
         })
@@ -322,6 +324,7 @@ class Gasha {
                             icon: 'images/pets/' + gashaData.img
                         });
                         this.toggleButtons(false);
+                        $.get("nodejs/send-emit.php", function () { });
                     }, 300);
                 }
             }
@@ -436,6 +439,7 @@ class Gasha {
                     }
                 }
                 gasha.toggleButtons(false);
+                $.get("nodejs/send-emit.php", function () { });
             }.bind(null, this), 300);
         }
     }

@@ -99,6 +99,7 @@ class Farm {
             GM_setValue('farmNotificationData', {
                 time: Date.now(),
             });
+            this.notificationData = GM_getValue('farmNotificationData', {});
         }
         this.updateFarm();
     }
@@ -199,6 +200,8 @@ class Farm {
                     GM_setValue('farmNotificationData', {
                         time: Date.now(),
                     });
+
+                    this.notificationData = GM_getValue('farmNotificationData', {});
                 }
             }
         });
