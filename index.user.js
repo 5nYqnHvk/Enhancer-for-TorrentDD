@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      1.1.0
+// @version      1.2.0
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -21,6 +21,9 @@
 
 /*
 Changelog
+1.2.0
+- เพิ่มปุ่ม Download กับปุ่ม Magnet สำหรับคนที่ไม่มี VIP
+
 1.1.0
 - แก้ไขระบบแจ้งเตือนไม่อัพเดทเมื่อมีการแจ้งเตือนแล้ว
 - เปลี่ยนจากระบบกดไพ่เป็นระบบค้นหาไพ่เนื่องจากอาจทำให้เซิฟเวอร์ทำงานหนักได้
