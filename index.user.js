@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      1.3.1
+// @version      1.3.2
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -13,7 +13,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/dist/index.user.js?version=1.3.1
+// @require      https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/dist/index.user.js?version=1.3.2
 // @downloadURL  https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
 // @updateURL    https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
@@ -21,6 +21,10 @@
 
 /*
 Changelog
+1.3.2
+- แก้ไข ui หน้า โต๊ะบอลให้แสดงได้ถูกต้อง
+- แก้ไขเมื่อกดปุ่มเดิมพันแล้วบันทึกข้อมูลไม่ทันก่อนเว็บรีเฟรช
+
 1.3.1
 - เก็บข้อมูลการเดิมพันโต็ะบอล
 
