@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      1.3.4
+// @version      1.3.5
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -13,7 +13,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/dist/index.user.js?version=1.3.4
+// @require      https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/dist/index.user.js?version=1.3.5
 // @downloadURL  https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
 // @updateURL    https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
@@ -21,6 +21,9 @@
 
 /*
 Changelog
+1.3.5
+- แก้บัคกดรับตั๋ว 2 ครั้ง
+
 1.3.4
 - เพิ่มหน้า ebet history (บอกว่าเดิมพันทีมไหนบ้างและได้รับหรือเสียเงินไปเท่าไหร่)
 
