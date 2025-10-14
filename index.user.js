@@ -13,14 +13,18 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/dist/index.user.js?version=1.3.6
-// @downloadURL  https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
-// @updateURL    https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js
+// @require      file://home/5nyqnhvk/Project/Enhancer-for-TorrentDD/dist/index.user.js
+// @downloadURL  file://home/5nyqnhvk/Project/Enhancer-for-TorrentDD/index.user.js
+// @updateURL    file://home/5nyqnhvk/Project/Enhancer-for-TorrentDD/index.user.js
 // @connect      5nYqnHvk.xyz
 // ==/UserScript==
 
 /*
 Changelog
+2.0.0
+- เริ่มทำใหม่
+- ทำระบบ notification ใหม่
+
 1.3.6
 - แก้ไขปุ่มรับตั๋ว ไม่เปลี่ยนสี
 - แก้ไขข้อความแสดงไม่ถูกต้องเมื่อกดรับตั๋ว

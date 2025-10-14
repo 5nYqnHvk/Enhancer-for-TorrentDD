@@ -1,0 +1,355 @@
+import { waitForBootstrap } from "../../utils/hook";
+import { fetchUserData } from "../data/fetchData";
+import { Settings } from "../data/models";
+import { createLogger } from "../../utils/logger";
+
+const logger = createLogger("Settings");
+const userInfo = await fetchUserData();
+
+const defaultSettingData: Settings = {
+  torrent: {
+    enabledTorrentModule: true,
+    showTorrentImage: true,
+    showDownloadButton: false,
+    showRateButton: false,
+    updatePeerslist: true,
+  },
+  farm: {
+    enabledFarmModule: true,
+    autoFarm: false,
+    notificationFarm: true,
+    farmUpdateInterval: 10,
+    minPlotReadyForNotification: 9,
+  },
+  gasha: {
+    enabledGashaModule: true,
+    saveGashaLog: false,
+    showGashaLog: false,
+  },
+  betcard: {
+    enabledBetCardModule: true,
+  },
+  others: {
+    licenseKey: "",
+    notificationSound: "default.mp3",
+  },
+};
+
+let settingData: Settings;
+
+export const initSettingButton = async () => {
+  settingData = await GM_getValue("settings", defaultSettingData);
+  const $menu = $(".dropdown-menu").eq(1);
+  if ($menu.length) {
+    const $newItem = $("<a>", {
+      href: "#",
+      class: "dropdown-item font-weight-medium",
+      html: "<i class='fal fa-cog mx-0'></i>&nbsp;&nbsp;TDD Settings",
+      "data-toggle": "modal",
+      "data-target": "#tddSettingsModal",
+    });
+
+    const $divider = $("<div>", { class: "dropdown-divider" });
+    $menu.children().eq(10).after($divider, $newItem);
+
+    const selectedSound = settingData.others.notificationSound || "";
+    $("body").append(
+      $(`<div class="modal fade" id="tddSettingsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">⚙️ TDD Script Settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <span><b>User</b>: ${userInfo.userId}:${
+        userInfo.username
+      }</span><br />
+          <span><b>TDDPremium</b>: ${userInfo.isPremium}</span>
+        </div>
+        <hr />
+
+        <!-- grp 0 
+        <h6 class="text-primary mb-2">ทั่วไป</h6>
+        <div class="form-group">
+          <label for="fontsize">ขนาดตัวอักษร</label>
+          <input type="number" class="form-control" id="fontsize" min="10" max="36" />
+        </div>
+
+        <hr />-->
+        <!-- grp 1 -->
+        <h6 class="text-primary mb-2">ระบบ Torrents</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledTorrentModule">
+                <input type="checkbox" class="form-check-input" id="enabledTorrentModule" ${
+                  settingData.torrent.enabledTorrentModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบ Torrents <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="showTorrentImage">
+                <input type="checkbox" class="form-check-input" id="showTorrentImage" ${
+                  settingData.torrent.showTorrentImage ? "checked" : ""
+                } />
+                แสดงรูปภาพ Torrent <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="showDownloadButton">
+                <input type="checkbox" class="form-check-input" id="showDownloadButton" ${
+                  settingData.torrent.showDownloadButton ? "checked" : ""
+                } ${userInfo.isPremium ? "" : "disabled"} />
+                แสดงปุ่มดาวน์โหลด (TDDPremium) <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="showRateButton">
+                <input type="checkbox" class="form-check-input" id="showRateButton" ${
+                  settingData.torrent.showRateButton ? "checked" : ""
+                } ${userInfo.isPremium ? "" : "disabled"} />
+                แสดงปุ่มให้คะแนน (TDDPremium) <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="updatePeerslist">
+                <input type="checkbox" class="form-check-input" id="updatePeerslist" ${
+                  settingData.torrent.updatePeerslist ? "checked" : ""
+                } />
+                อัปเดตรายชื่อ Peers <i class="input-helper"></i></label>
+            </div>
+        </div>
+
+        <hr />
+        <!-- grp 2 -->
+        <h6 class="text-primary mb-2">ระบบฟาร์ม</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledFarmModule">
+                <input type="checkbox" class="form-check-input" id="enabledFarmModule" ${
+                  settingData.farm.enabledFarmModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบฟาร์ม <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="autoFarm">
+                <input type="checkbox" class="form-check-input" id="autoFarm" ${
+                  settingData.farm.autoFarm ? "checked" : ""
+                } ${userInfo.isPremium ? "" : "disabled"} />
+                เปิดโหมดฟาร์มอัตโนมัติ (TDDPremium) <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="notificationFarm">
+                <input type="checkbox" class="form-check-input" id="notificationFarm" ${
+                  settingData.farm.notificationFarm ? "checked" : ""
+                } />
+                แจ้งเตือนเมื่อฟาร์มเสร็จ <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+          <label for="farmUpdateInterval">ช่วงเวลาอัปเดตแจ้งเตือนฟาร์ม (นาที)</label>
+          <input type="number" class="form-control" id="farmUpdateInterval" value="${
+            settingData.farm.farmUpdateInterval
+          }" min="10" max="120" />
+        </div>
+        <div class="form-group">
+          <label for="minPlotReadyForNotification">จำนวนขั้นต่ำที่พร้อมเก็บเกี่ยวที่ต้องการให้แจ้งเตือน</label>
+          <input type="number" class="form-control" id="minPlotReadyForNotification" value="${
+            settingData.farm.minPlotReadyForNotification
+          }" min="1" max="9" />
+        </div>
+        <hr />
+        <!-- grp 3 -->
+        <h6 class="text-primary mb-2">ระบบกาชา</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledGashaModule">
+                <input type="checkbox" class="form-check-input" id="enabledGashaModule" ${
+                  settingData.gasha.enabledGashaModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบกาชา <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="saveGashaLog">
+                <input type="checkbox" class="form-check-input" id="saveGashaLog" ${
+                  settingData.gasha.saveGashaLog ? "checked" : ""
+                } ${userInfo.isPremium ? "" : "disabled"} />
+                บันทึกประวัติกาชา (TDDPremium) <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="showGashaLog">
+                <input type="checkbox" class="form-check-input" id="showGashaLog" ${
+                  settingData.gasha.showGashaLog ? "checked" : ""
+                } ${userInfo.isPremium ? "" : "disabled"} />
+                แสดงประวัติกาชา (TDDPremium) <i class="input-helper"></i></label>
+            </div>
+        </div>
+
+        <hr />
+        <!-- grp 4 -->
+        <h6 class="text-primary mb-2">ระบบ BetCard</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledBetCardModule">
+                <input type="checkbox" class="form-check-input" id="enabledBetCardModule" ${
+                  settingData.betcard.enabledBetCardModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบ BetCard <i class="input-helper"></i></label>
+            </div>
+        </div>
+
+        <hr />
+        <!-- grp 5 -->
+        <h6 class="text-primary mb-2">อื่นๆ</h6>
+        <div class="form-group">
+          <label for="licenseKey">License Key</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="licenseKey" value="${settingData.others.licenseKey.substring(
+              0,
+              8
+            )}" />
+            <div class="input-group-append">
+              <button class="btn btn-outline-success" type="button" id="checkLicense">
+                ตรวจสอบ
+              </button>
+            </div>
+          </div>
+        </div>
+            <div class="form-group">
+            <label for="notificationSound">เสียงแจ้งเตือน</label>
+            <select id="notificationSound" class="form-control">
+                <option value="noti.mp3" ${
+                  selectedSound === "noti.mp3" ? "selected" : ""
+                }>Default</option>
+                <option value="ding.mp3" ${
+                  selectedSound === "ding.mp3" ? "selected" : ""
+                }>Ding</option>
+                <option value="pop.mp3" ${
+                  selectedSound === "pop.mp3" ? "selected" : ""
+                }>Pop</option>
+                <option value="alert.mp3" ${
+                  selectedSound === "alert.mp3" ? "selected" : ""
+                }>Alert</option>
+            </select>
+            </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+        <button type="button" class="btn btn-primary" id="saveSettings">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>`)
+    );
+
+    waitForBootstrap(() => {
+      const $licenseInput = $("#licenseKey");
+      const $checkBtn = $("#checkLicense");
+
+      // ฟังก์ชันอัปเดตสถานะปุ่ม
+      const updateLicenseButton = () => {
+        if (settingData.others.licenseKey) {
+          $licenseInput.prop("disabled", true);
+          $checkBtn.text("ลบ");
+          $checkBtn
+            .removeClass("btn-outline-success")
+            .addClass("btn-outline-danger");
+        } else {
+          $licenseInput.prop("disabled", false);
+          $checkBtn.text("ตรวจสอบ");
+          $checkBtn
+            .removeClass("btn-outline-danger")
+            .addClass("btn-outline-success");
+        }
+      };
+
+      updateLicenseButton(); // เรียกตอนโหลด modal
+
+      // กดปุ่มเช็ค/ลบ
+      $checkBtn.on("click", function () {
+        if (settingData.others.licenseKey) {
+          // ลบ license
+          settingData.others.licenseKey = "";
+          GM_setValue("settings", settingData);
+          updateLicenseButton();
+          $licenseInput.val("");
+          alert("ลบ License เรียบร้อยแล้ว!");
+        } else {
+          // ตรวจสอบ license (ตัวอย่าง)
+          const license = $licenseInput.val() as string;
+          if (license) {
+            settingData.others.licenseKey = license;
+            GM_setValue("settings", settingData);
+            updateLicenseButton();
+            alert("ตรวจสอบ License เรียบร้อย!");
+          } else {
+            alert("กรุณากรอก License ก่อน!");
+          }
+        }
+      });
+
+      // ปุ่มบันทึก settings
+      $(document).on("click", "#saveSettings", function () {
+        // อัปเดตค่า settings จาก input ตามที่คุณมีอยู่แล้ว
+        settingData.torrent.enabledTorrentModule = $(
+          "#enabledTorrentModule"
+        ).prop("checked");
+        settingData.torrent.showTorrentImage =
+          $("#showTorrentImage").prop("checked");
+        settingData.torrent.showDownloadButton = $("#showDownloadButton").prop(
+          "checked"
+        );
+        settingData.torrent.showRateButton =
+          $("#showRateButton").prop("checked");
+        settingData.torrent.updatePeerslist =
+          $("#updatePeerslist").prop("checked");
+
+        settingData.farm.enabledFarmModule =
+          $("#enabledFarmModule").prop("checked");
+        settingData.farm.autoFarm = $("#autoFarm").prop("checked");
+        settingData.farm.notificationFarm =
+          $("#notificationFarm").prop("checked");
+        settingData.farm.farmUpdateInterval =
+          parseInt($("#farmUpdateInterval").val() as string) || 10;
+        settingData.farm.minPlotReadyForNotification =
+          parseInt($("#minPlotReadyForNotification").val() as string) || 1;
+
+        settingData.gasha.enabledGashaModule = $("#enabledGashaModule").prop(
+          "checked"
+        );
+        settingData.gasha.saveGashaLog = $("#saveGashaLog").prop("checked");
+        settingData.gasha.showGashaLog = $("#showGashaLog").prop("checked");
+
+        settingData.betcard.enabledBetCardModule = $(
+          "#enabledBetCardModule"
+        ).prop("checked");
+
+        settingData.others.notificationSound = $(
+          "#notificationSound"
+        ).val() as string;
+
+        GM_setValue("settings", settingData);
+        alert("Settings saved!");
+        $("#tddSettingsModal").modal("hide");
+      });
+    });
+  }
+};
