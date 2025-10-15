@@ -142,10 +142,6 @@ const spinBtn = (test = "", skip = false) => {
         );
         const gashaData = await gasha.json();
 
-        if (test === "") {
-          if (settingData.gasha.saveGashaLog) saveGashaData(gashaData);
-        }
-
         if (gashaData.message === "low-coin") {
           logger.error("คุณมี Coin ไม่พอที่จะหมุนกาชา!");
           await swal.fire(
@@ -232,6 +228,10 @@ const spinBtn = (test = "", skip = false) => {
             } else {
               logger.info(`คุณทดสอบหมุนกาชาได้รับ ${gashaData.txt}!`);
             }
+          }
+
+          if (test === "") {
+            if (settingData.gasha.saveGashaLog) saveGashaData(gashaData);
           }
         }
       } catch (err) {
