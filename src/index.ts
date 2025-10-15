@@ -4,7 +4,7 @@ import { Settings } from "./modules/data/models";
 import { initRoutes } from "./modules/routes";
 import { initSettingModule } from "./modules/ui/settings";
 import { createLogger } from "./utils/logger";
-
+import toastr from "toastr";
 (async function () {
   const logger = createLogger("Main");
   logger.info("TorrentDD Enhancer loaded");
@@ -29,6 +29,42 @@ import { createLogger } from "./utils/logger";
   logger.info(`Premium: ${userInfo.isPremium}`);
   logger.info(`------------------------------------`);
 
+  const version = GM_info.script.version;
+  fetch("https://5nyqnhvk.xyz/checkUpdate.php")
+    .then(async (res) => await res.text())
+    .then((txt) => {
+      const versionMtch = txt.match(/\/\/ @version\s+(\d+\.\d+\.\d+)/);
+      if (versionMtch && versionMtch.length > 1) {
+        if (version != versionMtch[1]) {
+          logger.info(`ตรวจพบสคริปเวอร์ชันใหม่: ${versionMtch[1]}`);
+          toastr.info(
+            `เวอร์ชันใหม่: ${versionMtch[1]}<br>เวอร์ชันปัจจุบัน: ${version}`,
+            "ตรวจพบสคริปเวอร์ชันใหม่!",
+            {
+              closeButton: false,
+              debug: false,
+              newestOnTop: false,
+              progressBar: true,
+              positionClass: "toast-top-right",
+              preventDuplicates: false,
+              onclick: () => {
+                window.open(
+                  "https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js"
+                );
+              },
+              showDuration: 300,
+              hideDuration: 300,
+              timeOut: 2000,
+              extendedTimeOut: 500,
+              showEasing: "swing",
+              hideEasing: "linear",
+              showMethod: "fadeIn",
+              hideMethod: "fadeOut",
+            }
+          );
+        }
+      }
+    });
   const defaultSettingData: Settings = {
     torrent: {
       enabledTorrentModule: true,
