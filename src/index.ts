@@ -49,7 +49,7 @@ import toastr from "toastr";
               preventDuplicates: false,
               onclick: () => {
                 window.open(
-                  "https://raw.githubusercontent.com/Titivoot/Enhancer-for-TorrentDD/main/index.user.js"
+                  "https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js"
                 );
               },
               showDuration: 300,

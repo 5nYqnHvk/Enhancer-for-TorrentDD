@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      2.0.0
+// @version      2.0.1
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
