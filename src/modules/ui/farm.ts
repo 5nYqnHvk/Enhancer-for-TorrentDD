@@ -1,10 +1,10 @@
 import toastr from "toastr";
-import { fetchFarmData } from "../data/fetchData";
-import { FarmData, Settings } from "../data/models";
+import { fetchFarmData, fetctSettingData } from "../data/fetchData";
+import { FarmData } from "../data/models";
 import { createLogger } from "../../utils/logger";
 
 const logger = createLogger("Farm");
-const settingData: Settings = await GM_getValue("settings");
+const settingData = await fetctSettingData();
 
 let farmData: FarmData;
 let buyAllBtn: JQuery<HTMLElement>;

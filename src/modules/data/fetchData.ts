@@ -1,5 +1,5 @@
 import { createLogger } from "../../utils/logger";
-import { FarmStatus, FarmPlot, FarmData, UserData } from "./models";
+import { FarmStatus, FarmPlot, FarmData, UserData, Settings } from "./models";
 
 export const fetchUserData = async (): Promise<UserData> => {
   const logger = createLogger("User");
@@ -165,3 +165,35 @@ function parseFarmTime(str: string, fromNow = true): number {
 
   return (fromNow ? Date.now() : 0) + totalMs;
 }
+
+export const fetctSettingData = async () => {
+  const defaultSettingData: Settings = {
+    torrent: {
+      enabledTorrentModule: true,
+      showTorrentImage: true,
+      showDownloadButton: false,
+      showRateButton: false,
+      updatePeerslist: true,
+    },
+    farm: {
+      enabledFarmModule: true,
+      autoFarm: false,
+      notificationFarm: true,
+      farmUpdateInterval: 10,
+      minPlotReadyForNotification: 1,
+    },
+    gasha: {
+      enabledGashaModule: true,
+      saveGashaLog: true,
+      showGashaLog: true,
+    },
+    betcard: {
+      enabledBetCardModule: true,
+    },
+    others: {
+      notificationSound: "noti.mp3",
+    },
+  };
+
+  return await GM_getValue("settings", defaultSettingData);
+};

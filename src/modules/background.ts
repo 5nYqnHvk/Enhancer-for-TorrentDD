@@ -1,8 +1,7 @@
 import toastr from "toastr";
-import { fetchFarmData } from "./data/fetchData";
-import { Settings } from "./data/models";
+import { fetchFarmData, fetctSettingData } from "./data/fetchData";
 
-const settingData: Settings = await GM_getValue("settings");
+const settingData = await fetctSettingData();
 
 export const initBackground = async () => {
   if (!settingData.farm.notificationFarm) return;
@@ -55,13 +54,13 @@ const farmNotification = async () => {
         }
       );
 
-      GM_notification({
+      await GM_notification({
         text: `พบพืชที่โตเต็มที่แล้วจำนวน ${ready} ต้น`,
         title: "ถึงเวลาเก็บเกี่ยว!",
         url: "https://www.torrentdd.com/farm.php",
       });
 
-      GM_setValue("farmNotificationDate", Date.now());
+      await GM_setValue("farmNotificationDate", Date.now());
       farmNotificationDate = GM_getValue("farmNotificationDate");
     }
   }

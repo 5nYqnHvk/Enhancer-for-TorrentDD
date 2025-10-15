@@ -1,11 +1,12 @@
 import { waitForBootstrap } from "../../utils/hook";
-import { fetchUserData } from "../data/fetchData";
+import { fetchUserData, fetctSettingData } from "../data/fetchData";
 import { Settings } from "../data/models";
 import { createLogger } from "../../utils/logger";
 import swal from "sweetalert2";
 
 const logger = createLogger("Settings");
 const userInfo = await fetchUserData();
+const settingData = await fetctSettingData();
 
 const sounds: Record<string, HTMLAudioElement> = {
   "noti.mp3": new Audio("https://static.5ny.site/assets/music/noti.mp3"),
@@ -13,41 +14,11 @@ const sounds: Record<string, HTMLAudioElement> = {
   "alert.mp3": new Audio("https://static.5ny.site/assets/music/alert.mp3"),
 };
 
-const defaultSettingData: Settings = {
-  torrent: {
-    enabledTorrentModule: true,
-    showTorrentImage: true,
-    showDownloadButton: false,
-    showRateButton: false,
-    updatePeerslist: true,
-  },
-  farm: {
-    enabledFarmModule: true,
-    autoFarm: false,
-    notificationFarm: true,
-    farmUpdateInterval: 10,
-    minPlotReadyForNotification: 1,
-  },
-  gasha: {
-    enabledGashaModule: true,
-    saveGashaLog: false,
-    showGashaLog: false,
-  },
-  betcard: {
-    enabledBetCardModule: true,
-  },
-  others: {
-    notificationSound: "noti.mp3",
-  },
-};
-
-let settingData: Settings;
 export const initSettingModule = async () => {
-  settingData = await GM_getValue("settings", defaultSettingData);
-  await initSettingButton();
+  initSettingButton();
 };
 
-const initSettingButton = async () => {
+const initSettingButton = () => {
   const $menu = $(".dropdown-menu").eq(1);
   if ($menu.length) {
     const $newItem = $("<a>", {
@@ -263,7 +234,7 @@ const initSettingButton = async () => {
       const $resetGashaBtn = $("#resetGashaData");
 
       // ปุ่มบันทึก settings
-      $(document).on("click", "#saveSettings", function () {
+      $(document).on("click", "#saveSettings", async function () {
         // อัปเดตค่า settings จาก input ตามที่คุณมีอยู่แล้ว
         settingData.torrent.enabledTorrentModule = $(
           "#enabledTorrentModule"
@@ -302,7 +273,7 @@ const initSettingButton = async () => {
           "#notificationSound"
         ).val() as string;
 
-        GM_setValue("settings", settingData);
+        await GM_setValue("settings", settingData);
         swal.fire(
           "บันทึกข้อมูลสำเร็จ!",
           "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
@@ -322,10 +293,10 @@ const initSettingButton = async () => {
             cancelButtonText: "ยกเลิก",
             confirmButtonColor: "#FF0000",
           })
-          .then((result) => {
+          .then(async (result) => {
             $("#tddSettingsModal").modal("hide");
             if (result.isConfirmed) {
-              GM_setValue("gashaData", []);
+              await GM_setValue("gashaData", []);
               swal.fire(
                 "ลบข้อมูลสำเร็จ!",
                 "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",

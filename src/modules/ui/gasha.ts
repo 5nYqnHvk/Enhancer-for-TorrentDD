@@ -2,10 +2,11 @@ import { animateValue } from "../../utils/effect";
 import { getLocation } from "../../utils/hook";
 import { createLogger } from "../../utils/logger";
 import swal from "sweetalert2";
-import { GashaData, Settings } from "../data/models";
+import { GashaData } from "../data/models";
+import { fetctSettingData } from "../data/fetchData";
 
 const logger = createLogger("Gasha");
-const settingData: Settings = await GM_getValue("settings");
+const settingData = await fetctSettingData();
 
 let buttonSpin: JQuery<HTMLElement>;
 let buttonSpinSkip: JQuery<HTMLElement>;
@@ -23,7 +24,7 @@ export const initGashaModule = async () => {
 // gashalog
 // format return from storage [{"type":"C",img:"money.gif","txt":"1,000 Zen",date: new Date()}]
 // sync to cloud firebase (soon)
-const initGashaLog = () => {
+const initGashaLog = async () => {
   const newCard = $(".card").last().after(`
         <div class="card mt-3"><div class="card-body">
             <h5>ประวัติการสุ่มกาชา</h5>
@@ -49,7 +50,7 @@ const initGashaLog = () => {
         `);
   const tbody = $("table").find("tbody")[0];
 
-  gashaHistoryData = getGashaData()
+  gashaHistoryData = (await getGashaData())
     .filter((data) => data.type === getGashaType())
     .sort((a, b) => b.date - a.date);
 
@@ -246,12 +247,12 @@ const spinBtn = (test = "", skip = false) => {
   }
 };
 
-const getGashaData = (): GashaData[] => {
-  const gashaData = GM_getValue<GashaData[]>("gashaData", []);
+const getGashaData = async (): Promise<GashaData[]> => {
+  const gashaData = await GM_getValue<GashaData[]>("gashaData", []);
   return gashaData;
 };
 
-const saveGashaData = (gashaData: any) => {
+const saveGashaData = async (gashaData: any) => {
   const newData: GashaData = {
     type: getGashaType(),
     img: gashaData.img,
@@ -259,7 +260,7 @@ const saveGashaData = (gashaData: any) => {
     date: Date.now(),
   };
 
-  const updateGashaData: GashaData[] = GM_getValue<GashaData[]>(
+  const updateGashaData: GashaData[] = await GM_getValue<GashaData[]>(
     "gashaData",
     []
   );
