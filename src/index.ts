@@ -1,7 +1,7 @@
 import { initBackground } from "./modules/background";
 import { fetchUserData } from "./modules/data/fetchData";
 import { initRoutes } from "./modules/routes";
-import { initSettingButton } from "./modules/ui/settings";
+import { initSettingModule } from "./modules/ui/settings";
 import { createLogger } from "./utils/logger";
 
 (async function () {
@@ -28,6 +28,6 @@ import { createLogger } from "./utils/logger";
   logger.info(`Premium: ${userInfo.isPremium}`);
   logger.info(`------------------------------------`);
   await initBackground();
-  await initSettingButton();
+  await initSettingModule();
   await initRoutes();
 })();

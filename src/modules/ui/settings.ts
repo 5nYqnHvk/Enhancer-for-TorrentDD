@@ -37,14 +37,17 @@ const defaultSettingData: Settings = {
     enabledBetCardModule: true,
   },
   others: {
-    notificationSound: "default.mp3",
+    notificationSound: "noti.mp3",
   },
 };
 
 let settingData: Settings;
-
-export const initSettingButton = async () => {
+export const initSettingModule = async () => {
   settingData = await GM_getValue("settings", defaultSettingData);
+  await initSettingButton();
+};
+
+const initSettingButton = async () => {
   const $menu = $(".dropdown-menu").eq(1);
   if ($menu.length) {
     const $newItem = $("<a>", {
