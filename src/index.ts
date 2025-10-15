@@ -27,7 +27,7 @@ import { createLogger } from "./utils/logger";
   );
   logger.info(`Premium: ${userInfo.isPremium}`);
   logger.info(`------------------------------------`);
-  await initBackground();
   await initSettingModule();
+  await initBackground();
   await initRoutes();
 })();

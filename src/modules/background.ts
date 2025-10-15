@@ -17,7 +17,7 @@ const farmNotification = async () => {
   let farmNotificationDate = await GM_getValue("farmNotificationDate", 0);
 
   const sound = new Audio(
-    `https://5nyqnhvk.xyz/assets/music/${settingData.others.notificationSound}`
+    `https://static.5ny.site/assets/music/${settingData.others.notificationSound}`
   );
   sound.volume = 0.4;
 
