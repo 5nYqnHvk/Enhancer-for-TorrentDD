@@ -5,20 +5,19 @@ import { Settings } from "./data/models";
 const settingData: Settings = await GM_getValue("settings");
 
 export const initBackground = async () => {
-  farmNotification();
+  if (!settingData.farm.notificationFarm) return;
+  await farmNotification();
   setInterval(
-    () => farmNotification(),
+    async () => await farmNotification(),
     settingData.farm.farmUpdateInterval * 60 * 1000
   );
 };
 
 const farmNotification = async () => {
-  const getFarmData = await fetchFarmData(false);
-
   let farmNotificationDate = await GM_getValue("farmNotificationDate", 0);
 
   const sound = new Audio(
-    `https://5nyqnhvk.xyz/assets/music/${settingData.others.notificationSound}`
+    `https://static.5ny.site/assets/music/${settingData.others.notificationSound}`
   );
   sound.volume = 0.4;
 
@@ -27,6 +26,7 @@ const farmNotification = async () => {
     farmNotificationDate + 1 * 60 * 60 * 1000
   );
   if (now > lasted_notification) {
+    const getFarmData = await fetchFarmData(false);
     let ready: number = getFarmData.quantityReady + getFarmData.quantitySpoiled;
     if (ready >= settingData.farm.minPlotReadyForNotification) {
       sound.play();

@@ -22,7 +22,6 @@ export interface FarmData {
   resText?: string;
 }
 
-// types.ts
 export interface TorrentSettings {
   enabledTorrentModule: boolean;
   showTorrentImage: boolean;
@@ -50,7 +49,6 @@ export interface BetCardSettings {
 }
 
 export interface OtherSettings {
-  licenseKey: string;
   notificationSound: string;
 }
 
@@ -66,4 +64,11 @@ export interface UserInfo {
   userId: string;
   username: string;
   isPremium: boolean;
+}
+
+export interface GashaData {
+  type: "C" | "G1" | "G2";
+  img: string;
+  txt: string;
+  date: number;
 }

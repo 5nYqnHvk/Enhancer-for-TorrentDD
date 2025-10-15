@@ -19,7 +19,7 @@ const config = {
       //   $: "jquery",
       //   jQuery: "jquery",
       toastr: "toastr",
-      //   swal: "sweetalert",
+      swal: "sweetalert2",
     }),
   ],
   module: {

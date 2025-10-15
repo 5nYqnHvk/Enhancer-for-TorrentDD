@@ -14,7 +14,7 @@ export const fetchUserData = async (): Promise<UserData> => {
         .replace("mypeers.php?userid=", "")
     );
     const userClassId = getUserClassId();
-    const isPremium = false;
+    const isPremium = true;
 
     return {
       userId: userId,

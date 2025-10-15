@@ -2,9 +2,16 @@ import { waitForBootstrap } from "../../utils/hook";
 import { fetchUserData } from "../data/fetchData";
 import { Settings } from "../data/models";
 import { createLogger } from "../../utils/logger";
+import swal from "sweetalert2";
 
 const logger = createLogger("Settings");
 const userInfo = await fetchUserData();
+
+const sounds: Record<string, HTMLAudioElement> = {
+  "noti.mp3": new Audio("https://static.5ny.site/assets/music/noti.mp3"),
+  "pop.mp3": new Audio("https://static.5ny.site/assets/music/pop.mp3"),
+  "alert.mp3": new Audio("https://static.5ny.site/assets/music/alert.mp3"),
+};
 
 const defaultSettingData: Settings = {
   torrent: {
@@ -19,7 +26,7 @@ const defaultSettingData: Settings = {
     autoFarm: false,
     notificationFarm: true,
     farmUpdateInterval: 10,
-    minPlotReadyForNotification: 9,
+    minPlotReadyForNotification: 1,
   },
   gasha: {
     enabledGashaModule: true,
@@ -30,7 +37,6 @@ const defaultSettingData: Settings = {
     enabledBetCardModule: true,
   },
   others: {
-    licenseKey: "",
     notificationSound: "default.mp3",
   },
 };
@@ -66,23 +72,12 @@ export const initSettingButton = async () => {
 
       <div class="modal-body">
         <div class="mb-3">
-          <span><b>User</b>: ${userInfo.userId}:${
-        userInfo.username
-      }</span><br />
-          <span><b>TDDPremium</b>: ${userInfo.isPremium}</span>
+          <span><b>User</b>: ${userInfo.userId}:${userInfo.username}</span>
         </div>
         <hr />
 
-        <!-- grp 0 
-        <h6 class="text-primary mb-2">ทั่วไป</h6>
-        <div class="form-group">
-          <label for="fontsize">ขนาดตัวอักษร</label>
-          <input type="number" class="form-control" id="fontsize" min="10" max="36" />
-        </div>
-
-        <hr />-->
         <!-- grp 1 -->
-        <h6 class="text-primary mb-2">ระบบ Torrents</h6>
+        <!-- <h6 class="text-primary mb-2">ระบบ Torrents</h6>
         <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="enabledTorrentModule">
@@ -107,7 +102,7 @@ export const initSettingButton = async () => {
                 <input type="checkbox" class="form-check-input" id="showDownloadButton" ${
                   settingData.torrent.showDownloadButton ? "checked" : ""
                 } ${userInfo.isPremium ? "" : "disabled"} />
-                แสดงปุ่มดาวน์โหลด (TDDPremium) <i class="input-helper"></i></label>
+                แสดงปุ่มดาวน์โหลด <i class="input-helper"></i></label>
             </div>
         </div>
         <div class="form-group">
@@ -116,7 +111,7 @@ export const initSettingButton = async () => {
                 <input type="checkbox" class="form-check-input" id="showRateButton" ${
                   settingData.torrent.showRateButton ? "checked" : ""
                 } ${userInfo.isPremium ? "" : "disabled"} />
-                แสดงปุ่มให้คะแนน (TDDPremium) <i class="input-helper"></i></label>
+                แสดงปุ่มให้คะแนน <i class="input-helper"></i></label>
             </div>
         </div>
         <div class="form-group">
@@ -129,7 +124,7 @@ export const initSettingButton = async () => {
             </div>
         </div>
 
-        <hr />
+        <hr /> -->
         <!-- grp 2 -->
         <h6 class="text-primary mb-2">ระบบฟาร์ม</h6>
         <div class="form-group">
@@ -141,15 +136,15 @@ export const initSettingButton = async () => {
                 เปิดใช้งานระบบฟาร์ม <i class="input-helper"></i></label>
             </div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="autoFarm">
                 <input type="checkbox" class="form-check-input" id="autoFarm" ${
                   settingData.farm.autoFarm ? "checked" : ""
                 } ${userInfo.isPremium ? "" : "disabled"} />
-                เปิดโหมดฟาร์มอัตโนมัติ (TDDPremium) <i class="input-helper"></i></label>
+                เปิดโหมดฟาร์มอัตโนมัติ <i class="input-helper"></i></label>
             </div>
-        </div>
+        </div> -->
         <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="notificationFarm">
@@ -189,7 +184,7 @@ export const initSettingButton = async () => {
                 <input type="checkbox" class="form-check-input" id="saveGashaLog" ${
                   settingData.gasha.saveGashaLog ? "checked" : ""
                 } ${userInfo.isPremium ? "" : "disabled"} />
-                บันทึกประวัติกาชา (TDDPremium) <i class="input-helper"></i></label>
+                บันทึกประวัติกาชา <i class="input-helper"></i></label>
             </div>
         </div>
         <div class="form-group">
@@ -198,13 +193,15 @@ export const initSettingButton = async () => {
                 <input type="checkbox" class="form-check-input" id="showGashaLog" ${
                   settingData.gasha.showGashaLog ? "checked" : ""
                 } ${userInfo.isPremium ? "" : "disabled"} />
-                แสดงประวัติกาชา (TDDPremium) <i class="input-helper"></i></label>
+                แสดงประวัติกาชา <i class="input-helper"></i></label>
             </div>
         </div>
+        <button type="button" class="btn btn-block btn-danger" id="resetGashaData">ลบข้อมูลกาชา</button>
+
 
         <hr />
         <!-- grp 4 -->
-        <h6 class="text-primary mb-2">ระบบ BetCard</h6>
+        <!-- <h6 class="text-primary mb-2">ระบบ BetCard</h6>
         <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="enabledBetCardModule">
@@ -213,42 +210,33 @@ export const initSettingButton = async () => {
                 } />
                 เปิดใช้งานระบบ BetCard <i class="input-helper"></i></label>
             </div>
-        </div>
+        </div> -->
 
         <hr />
         <!-- grp 5 -->
         <h6 class="text-primary mb-2">อื่นๆ</h6>
+
         <div class="form-group">
-          <label for="licenseKey">License Key</label>
+          <label for="notificationSound">เสียงแจ้งเตือน</label>
           <div class="input-group">
-            <input type="text" class="form-control" id="licenseKey" value="${settingData.others.licenseKey.substring(
-              0,
-              8
-            )}" />
+            <select id="notificationSound" class="form-control">
+              <option value="noti.mp3" ${
+                selectedSound === "noti.mp3" ? "selected" : ""
+              }>Ding</option>
+              <option value="pop.mp3" ${
+                selectedSound === "pop.mp3" ? "selected" : ""
+              }>Pop</option>
+              <option value="alert.mp3" ${
+                selectedSound === "alert.mp3" ? "selected" : ""
+              }>Alert</option>
+            </select>
             <div class="input-group-append">
-              <button class="btn btn-outline-success" type="button" id="checkLicense">
-                ตรวจสอบ
+              <button class="btn btn-outline-success" type="button" id="playSound">
+                ทดสอบ
               </button>
             </div>
           </div>
         </div>
-            <div class="form-group">
-            <label for="notificationSound">เสียงแจ้งเตือน</label>
-            <select id="notificationSound" class="form-control">
-                <option value="noti.mp3" ${
-                  selectedSound === "noti.mp3" ? "selected" : ""
-                }>Default</option>
-                <option value="ding.mp3" ${
-                  selectedSound === "ding.mp3" ? "selected" : ""
-                }>Ding</option>
-                <option value="pop.mp3" ${
-                  selectedSound === "pop.mp3" ? "selected" : ""
-                }>Pop</option>
-                <option value="alert.mp3" ${
-                  selectedSound === "alert.mp3" ? "selected" : ""
-                }>Alert</option>
-            </select>
-            </div>
       </div>
 
       <div class="modal-footer">
@@ -260,51 +248,16 @@ export const initSettingButton = async () => {
 </div>`)
     );
 
+    $("#playSound").on("click", () => {
+      const selectedSound = $("#notificationSound").val().toString();
+      if (selectedSound && sounds[selectedSound]) {
+        sounds[selectedSound].volume = 0.4;
+        sounds[selectedSound].play();
+      }
+    });
+
     waitForBootstrap(() => {
-      const $licenseInput = $("#licenseKey");
-      const $checkBtn = $("#checkLicense");
-
-      // ฟังก์ชันอัปเดตสถานะปุ่ม
-      const updateLicenseButton = () => {
-        if (settingData.others.licenseKey) {
-          $licenseInput.prop("disabled", true);
-          $checkBtn.text("ลบ");
-          $checkBtn
-            .removeClass("btn-outline-success")
-            .addClass("btn-outline-danger");
-        } else {
-          $licenseInput.prop("disabled", false);
-          $checkBtn.text("ตรวจสอบ");
-          $checkBtn
-            .removeClass("btn-outline-danger")
-            .addClass("btn-outline-success");
-        }
-      };
-
-      updateLicenseButton(); // เรียกตอนโหลด modal
-
-      // กดปุ่มเช็ค/ลบ
-      $checkBtn.on("click", function () {
-        if (settingData.others.licenseKey) {
-          // ลบ license
-          settingData.others.licenseKey = "";
-          GM_setValue("settings", settingData);
-          updateLicenseButton();
-          $licenseInput.val("");
-          alert("ลบ License เรียบร้อยแล้ว!");
-        } else {
-          // ตรวจสอบ license (ตัวอย่าง)
-          const license = $licenseInput.val() as string;
-          if (license) {
-            settingData.others.licenseKey = license;
-            GM_setValue("settings", settingData);
-            updateLicenseButton();
-            alert("ตรวจสอบ License เรียบร้อย!");
-          } else {
-            alert("กรุณากรอก License ก่อน!");
-          }
-        }
-      });
+      const $resetGashaBtn = $("#resetGashaData");
 
       // ปุ่มบันทึก settings
       $(document).on("click", "#saveSettings", function () {
@@ -347,8 +300,36 @@ export const initSettingButton = async () => {
         ).val() as string;
 
         GM_setValue("settings", settingData);
-        alert("Settings saved!");
+        swal.fire(
+          "บันทึกข้อมูลสำเร็จ!",
+          "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
+          "success"
+        );
         $("#tddSettingsModal").modal("hide");
+      });
+
+      $resetGashaBtn.on("click", function () {
+        swal
+          .fire({
+            title: "คุณต้องการลบข้อมูลกาชาหรือไม่!",
+            text: "ถ้าลบแล้วจะไม่สามารถกู้ข้อมูลคืนได้",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "ลบ",
+            cancelButtonText: "ยกเลิก",
+            confirmButtonColor: "#FF0000",
+          })
+          .then((result) => {
+            $("#tddSettingsModal").modal("hide");
+            if (result.isConfirmed) {
+              GM_setValue("gashaData", []);
+              swal.fire(
+                "ลบข้อมูลสำเร็จ!",
+                "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
+                "success"
+              );
+            }
+          });
       });
     });
   }

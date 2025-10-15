@@ -1,14 +1,22 @@
 import toastr from "toastr";
 import { fetchFarmData } from "../data/fetchData";
-import { FarmData } from "../data/models";
+import { FarmData, Settings } from "../data/models";
 import { createLogger } from "../../utils/logger";
 
 const logger = createLogger("Farm");
+const settingData: Settings = await GM_getValue("settings");
+
 let farmData: FarmData;
 let buyAllBtn: JQuery<HTMLElement>;
 let harvestAllBtn: JQuery<HTMLElement>;
 
-export const initFarmButton = async () => {
+export const initFarmModule = async () => {
+  if (!settingData.farm.enabledFarmModule) return;
+  initFarmButton();
+  await updateFarm();
+};
+
+const initFarmButton = async () => {
   const card = $(".card-body").first();
 
   const buttonGroup = $(
@@ -27,7 +35,6 @@ export const initFarmButton = async () => {
 
   buyAllBtn.on("click", () => placeSeedAll());
   harvestAllBtn.on("click", () => gatherPlantAll());
-  await updateFarm();
 };
 
 export const updateFarmButtons = () => {
