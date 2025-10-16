@@ -1,9 +1,12 @@
 import Swal from "sweetalert2";
 import { createLogger } from "../../utils/logger";
+import { fetctSettingData } from "../data/fetchData";
 
 const logger = createLogger("Ticket");
+const settingData = await fetctSettingData();
 
 export const initTicketModule = async () => {
+  if (!settingData.ticket.enabledTicketModule) return;
   initTicketButton();
 };
 

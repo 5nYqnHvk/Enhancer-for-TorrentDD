@@ -1,7 +1,9 @@
 import { animateValue } from "../../utils/effect";
 import { createLogger } from "../../utils/logger";
+import { fetctSettingData } from "../data/fetchData";
 
 const logger = createLogger("PlaceCard");
+const settingData = await fetctSettingData();
 
 let statusBet: HTMLElement;
 let statusNextBet: HTMLElement;
@@ -24,6 +26,7 @@ let placeBetTimer: NodeJS.Timeout | null = null;
 let isBetting = false;
 
 export const initPlaceCardModule = async () => {
+  if (!settingData.betcard.enabledBetCardModule) return;
   initCard();
 };
 

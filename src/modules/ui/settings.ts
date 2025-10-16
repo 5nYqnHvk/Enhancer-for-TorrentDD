@@ -141,7 +141,50 @@ const initSettingButton = () => {
           }" min="1" max="9" />
         </div>
         <hr />
-        <!-- grp 3 -->
+
+         <!-- grp 3 -->
+        <h6 class="text-primary mb-2">ระบบตั่ว</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledTicketModule">
+                <input type="checkbox" class="form-check-input" id="enabledTicketModule" ${
+                  settingData.ticket.enabledTicketModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบตั่ว <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <!-- <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="autoTicket">
+                <input type="checkbox" class="form-check-input" id="autoTicket" ${
+                  settingData.ticket.autoTicket ? "checked" : ""
+                } ${userInfo.isPremium ? "" : "disabled"} />
+                เปิดโหมดฟาร์มอัตโนมัติ <i class="input-helper"></i></label>
+            </div>
+        </div> -->
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="notificationTicket">
+                <input type="checkbox" class="form-check-input" id="notificationTicket" ${
+                  settingData.ticket.notificationTicket ? "checked" : ""
+                } />
+                แจ้งเตือนเมื่อตั่วรับได้ <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+          <label for="ticketUpdateInterval">ช่วงเวลาอัปเดตแจ้งเตือนตั่ว (นาที)</label>
+          <input type="number" class="form-control" id="ticketUpdateInterval" value="${
+            settingData.ticket.ticketUpdateInterval
+          }" min="10" max="120" />
+        </div>
+        <div class="form-group">
+          <label for="minTicketReadyForNotification">จำนวนตั่วขั้นต่ำที่พร้อมรับที่ต้องการให้แจ้งเตือน</label>
+          <input type="number" class="form-control" id="minTicketReadyForNotification" value="${
+            settingData.ticket.minTicketReadyForNotification
+          }" min="1" max="9" />
+        </div>
+        <hr />
+        <!-- grp 4 -->
         <h6 class="text-primary mb-2">ระบบกาชา</h6>
         <div class="form-group">
             <div class="form-check form-check-flat">
@@ -174,8 +217,8 @@ const initSettingButton = () => {
 
 
         <hr />
-        <!-- grp 4 -->
-        <!-- <h6 class="text-primary mb-2">ระบบ BetCard</h6>
+        <!-- grp 5 -->
+        <h6 class="text-primary mb-2">ระบบ BetCard</h6>
         <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="enabledBetCardModule">
@@ -184,10 +227,10 @@ const initSettingButton = () => {
                 } />
                 เปิดใช้งานระบบ BetCard <i class="input-helper"></i></label>
             </div>
-        </div> -->
+        </div>
 
         <hr />
-        <!-- grp 5 -->
+        <!-- grp 6 -->
         <h6 class="text-primary mb-2">อื่นๆ</h6>
 
         <div class="form-group">
@@ -258,6 +301,18 @@ const initSettingButton = () => {
           parseInt($("#farmUpdateInterval").val() as string) || 10;
         settingData.farm.minPlotReadyForNotification =
           parseInt($("#minPlotReadyForNotification").val() as string) || 1;
+
+        settingData.ticket.enabledTicketModule = $("#enabledTicketModule").prop(
+          "checked"
+        );
+        settingData.ticket.autoTicket = $("#autoTicket").prop("checked");
+        settingData.ticket.notificationTicket = $("#notificationTicket").prop(
+          "checked"
+        );
+        settingData.ticket.ticketUpdateInterval =
+          parseInt($("#ticketUpdateInterval").val() as string) || 10;
+        settingData.ticket.minTicketReadyForNotification =
+          parseInt($("#minTicketReadyForNotification").val() as string) || 1;
 
         settingData.gasha.enabledGashaModule = $("#enabledGashaModule").prop(
           "checked"

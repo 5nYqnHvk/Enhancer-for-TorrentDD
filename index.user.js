@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      2.0.1
+// @version      2.1.0
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -26,4 +26,7 @@ Changelog
 - มีหน้า setting ดูได้ในปุ่มเฟืองขวาบนชื่อ TDD Settings
 - เอาระบบเก่าออกไปก่อน (เดี่ยวใส่เพิ่มอัพเดทหน้า)
 - ฟังก์ชั่นปัจจุบัน (Farm, Gasha)
+2.1.0
+- เพื่มระบบแจ้งเตือน Ticket
+- เพิ่มระบบวางไพ่ Battle Card
 */
