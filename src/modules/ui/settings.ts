@@ -181,7 +181,7 @@ const initSettingButton = () => {
           <label for="minTicketReadyForNotification">จำนวนตั่วขั้นต่ำที่พร้อมรับที่ต้องการให้แจ้งเตือน</label>
           <input type="number" class="form-control" id="minTicketReadyForNotification" value="${
             settingData.ticket.minTicketReadyForNotification
-          }" min="1" max="9" />
+          }" min="1" max="10" />
         </div>
         <hr />
         <!-- grp 4 -->
