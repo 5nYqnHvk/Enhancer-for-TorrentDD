@@ -1,6 +1,7 @@
 import { routeLoader } from "../core/router";
 import { initFarmModule } from "./ui/farm";
 import { initGashaModule } from "./ui/gasha";
+import { initPlaceCardModule } from "./ui/placeCard";
 import { initTicketModule } from "./ui/ticket";
 
 export const initRoutes = async () => {
@@ -19,6 +20,11 @@ export const initRoutes = async () => {
       name: "Ticket",
       match: /^\/ticket\.php$/,
       init: async () => initTicketModule(),
+    },
+    {
+      name: "PlaceCard",
+      match: /^\/card_vs_player\.php\?mod=create$/,
+      init: async () => initPlaceCardModule(),
     },
   ]);
 };
