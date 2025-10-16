@@ -22,6 +22,11 @@ export interface FarmData {
   resText?: string;
 }
 
+export interface TicketData {
+  ready: boolean;
+  quantityReady: number;
+}
+
 export interface TorrentSettings {
   enabledTorrentModule: boolean;
   showTorrentImage: boolean;
@@ -44,6 +49,14 @@ export interface GashaSettings {
   showGashaLog: boolean;
 }
 
+export interface TicketSettings {
+  enabledTicketModule: boolean;
+  autoTicket: boolean;
+  notificationTicket: boolean;
+  ticketUpdateInterval: number;
+  minTicketReadyForNotification: number;
+}
+
 export interface BetCardSettings {
   enabledBetCardModule: boolean;
 }
@@ -56,6 +69,7 @@ export interface Settings {
   torrent: TorrentSettings;
   farm: FarmSettings;
   gasha: GashaSettings;
+  ticket: TicketSettings;
   betcard: BetCardSettings;
   others: OtherSettings;
 }

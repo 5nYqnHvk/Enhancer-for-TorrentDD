@@ -1,5 +1,9 @@
 import toastr from "toastr";
-import { fetchFarmData, fetctSettingData } from "./data/fetchData";
+import {
+  fetchFarmData,
+  fetchTicketData,
+  fetctSettingData,
+} from "./data/fetchData";
 
 const settingData = await fetctSettingData();
 
@@ -9,6 +13,13 @@ export const initBackground = async () => {
   setInterval(
     async () => await farmNotification(),
     settingData.farm.farmUpdateInterval * 60 * 1000
+  );
+
+  if (!settingData.ticket.notificationTicket) return;
+  await ticketNotification();
+  setInterval(
+    async () => await ticketNotification(),
+    settingData.ticket.ticketUpdateInterval * 60 * 1000
   );
 };
 
@@ -28,9 +39,9 @@ const farmNotification = async () => {
     const getFarmData = await fetchFarmData(false);
     let ready: number = getFarmData.quantityReady + getFarmData.quantitySpoiled;
     if (ready >= settingData.farm.minPlotReadyForNotification) {
-      sound.play();
+      await sound.play();
 
-      toastr.info(
+      await toastr.info(
         `พบพืชที่โตเต็มที่แล้วจำนวน ${ready} ต้น`,
         "ถึงเวลาเก็บเกี่ยว!",
         {
@@ -61,7 +72,60 @@ const farmNotification = async () => {
       });
 
       await GM_setValue("farmNotificationDate", Date.now());
-      farmNotificationDate = GM_getValue("farmNotificationDate");
+    }
+  }
+};
+
+const ticketNotification = async () => {
+  let ticketNotificationDate = await GM_getValue("ticketNotificationDate", 0);
+
+  const sound = new Audio(
+    `https://static.5ny.site/assets/music/${settingData.others.notificationSound}`
+  );
+  sound.volume = 0.4;
+
+  const now = new Date();
+  const lasted_notification = new Date(
+    ticketNotificationDate + 1 * 60 * 60 * 1000
+  );
+  if (now > lasted_notification) {
+    const getTicketData = await fetchTicketData();
+    let ready = getTicketData.ready;
+    let tickets = getTicketData.quantityReady;
+    if (ready && tickets >= settingData.ticket.minTicketReadyForNotification) {
+      await sound.play();
+
+      await toastr.info(
+        `คุณได้รับตั๋วจำนวน ${ready} ชิ้น`,
+        "ถึงเวลาเก็บตั๋วแล้ว!",
+        {
+          closeButton: false,
+          debug: false,
+          newestOnTop: false,
+          progressBar: true,
+          positionClass: "toast-top-right",
+          preventDuplicates: false,
+          onclick: () => {
+            window.location.href = "ticket.php";
+          },
+          showDuration: 300,
+          hideDuration: 300,
+          timeOut: 100000,
+          extendedTimeOut: 500,
+          showEasing: "swing",
+          hideEasing: "linear",
+          showMethod: "fadeIn",
+          hideMethod: "fadeOut",
+        }
+      );
+
+      await GM_notification({
+        text: `คุณได้รับตั๋วจำนวน ${ready} ชิ้น`,
+        title: "ถึงเวลาเก็บตั๋วแล้ว!",
+        url: "https://www.torrentdd.com/ticket.php",
+      });
+
+      await GM_setValue("ticketNotificationDate", Date.now());
     }
   }
 };

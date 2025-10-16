@@ -1,5 +1,12 @@
 import { createLogger } from "../../utils/logger";
-import { FarmStatus, FarmPlot, FarmData, UserData, Settings } from "./models";
+import {
+  FarmStatus,
+  FarmPlot,
+  FarmData,
+  UserData,
+  Settings,
+  TicketData,
+} from "./models";
 
 export const fetchUserData = async (): Promise<UserData> => {
   const logger = createLogger("User");
@@ -166,34 +173,84 @@ function parseFarmTime(str: string, fromNow = true): number {
   return (fromNow ? Date.now() : 0) + totalMs;
 }
 
-export const fetctSettingData = async () => {
-  const defaultSettingData: Settings = {
-    torrent: {
-      enabledTorrentModule: true,
-      showTorrentImage: true,
-      showDownloadButton: false,
-      showRateButton: false,
-      updatePeerslist: true,
-    },
-    farm: {
-      enabledFarmModule: true,
-      autoFarm: false,
-      notificationFarm: true,
-      farmUpdateInterval: 10,
-      minPlotReadyForNotification: 1,
-    },
-    gasha: {
-      enabledGashaModule: true,
-      saveGashaLog: true,
-      showGashaLog: true,
-    },
-    betcard: {
-      enabledBetCardModule: true,
-    },
-    others: {
-      notificationSound: "noti.mp3",
-    },
-  };
+export const fetchTicketData = async (): Promise<TicketData> => {
+  const ticket = await fetch("https://www.torrentdd.com/ticket.php");
+  const ticketBody = await ticket.text();
 
-  return await GM_getValue("settings", defaultSettingData);
+  const dom = new DOMParser();
+  const parser = dom.parseFromString(ticketBody, "text/html");
+  const ticketButton = $(parser).find(".card-body.text-center").find("button");
+  const tickets = Number(ticketButton.text().split(" ")[1]);
+
+  return {
+    ready: tickets > 0 ? true : false,
+    quantityReady: tickets,
+  };
 };
+
+const defaultSettingData: Settings = {
+  torrent: {
+    enabledTorrentModule: true,
+    showTorrentImage: true,
+    showDownloadButton: false,
+    showRateButton: false,
+    updatePeerslist: true,
+  },
+  farm: {
+    enabledFarmModule: true,
+    autoFarm: false,
+    notificationFarm: true,
+    farmUpdateInterval: 10,
+    minPlotReadyForNotification: 1,
+  },
+  gasha: {
+    enabledGashaModule: true,
+    saveGashaLog: true,
+    showGashaLog: true,
+  },
+  ticket: {
+    enabledTicketModule: true,
+    autoTicket: false,
+    notificationTicket: true,
+    ticketUpdateInterval: 10,
+    minTicketReadyForNotification: 1,
+  },
+  betcard: {
+    enabledBetCardModule: true,
+  },
+  others: {
+    notificationSound: "noti.mp3",
+  },
+};
+
+export const fetctSettingData = async () => {
+  const data = await GM_getValue("settings", defaultSettingData);
+  const fixedData = mergeWithDefault(data, defaultSettingData);
+  await GM_setValue("settings", fixedData);
+  return fixedData;
+};
+
+function mergeWithDefault<T>(data: any, defaults: T): T {
+  if (typeof defaults !== "object" || defaults === null) {
+    return typeof data === typeof defaults ? data : (defaults as T);
+  }
+
+  const result: any = Array.isArray(defaults) ? [] : {};
+
+  for (const key of Object.keys(defaults)) {
+    const defVal = (defaults as any)[key];
+    const userVal = data ? (data as any)[key] : undefined;
+
+    if (userVal === undefined) {
+      result[key] = defVal;
+    } else if (typeof defVal === "object" && defVal !== null) {
+      result[key] = mergeWithDefault(userVal, defVal);
+    } else if (typeof userVal === typeof defVal) {
+      result[key] = userVal;
+    } else {
+      result[key] = defVal;
+    }
+  }
+
+  return result as T;
+}
