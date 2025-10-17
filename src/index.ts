@@ -65,33 +65,7 @@ import toastr from "toastr";
         }
       }
     });
-  const defaultSettingData: Settings = {
-    torrent: {
-      enabledTorrentModule: true,
-      showTorrentImage: true,
-      showDownloadButton: false,
-      showRateButton: false,
-      updatePeerslist: true,
-    },
-    farm: {
-      enabledFarmModule: true,
-      autoFarm: false,
-      notificationFarm: true,
-      farmUpdateInterval: 10,
-      minPlotReadyForNotification: 1,
-    },
-    gasha: {
-      enabledGashaModule: true,
-      saveGashaLog: false,
-      showGashaLog: false,
-    },
-    betcard: {
-      enabledBetCardModule: true,
-    },
-    others: {
-      notificationSound: "noti.mp3",
-    },
-  };
+
   await initSettingModule();
   await initBackground();
   await initRoutes();

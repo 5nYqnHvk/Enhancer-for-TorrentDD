@@ -30,12 +30,14 @@ export const fetchUserData = async (): Promise<UserData> => {
       isPremium: isPremium,
     };
   } catch (err) {
-    throw logger.error("ดึงข้อมูลผู้ใช้งานไม่สำเร็จ");
+    throw logger.error("ดึงข้อมูลผู้ใช้งานไม่สำเร็จ", err);
   }
 };
 
 const getUserClassId = (): number => {
-  const userClassId = $(".name").attr("class").split(/\s+/)[3];
+  const userClassId = $(".d-flex.align-items-center.justify-content-center a")
+    .attr("class")
+    .split(/\s+/)[0];
   const className = [
     "text-user",
     "text-rookie",

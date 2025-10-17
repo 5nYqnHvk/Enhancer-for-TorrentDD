@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      2.1.0
+// @version      2.1.1
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -13,7 +13,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.1.0
+// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.1.1
 // @downloadURL  https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @updateURL    https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
@@ -29,4 +29,6 @@ Changelog
 2.1.0
 - เพื่มระบบแจ้งเตือน Ticket
 - เพิ่มระบบวางไพ่ Battle Card
+2.1.1
+- แก้ไขดึงข้อมูลโปรไฟล์ไม่สำเร็จทำให้ Script พัง
 */
