@@ -12,7 +12,7 @@ export const fetchUserData = async (): Promise<UserData> => {
   const logger = createLogger("User");
 
   try {
-    const username = $(".name")
+    const username = $(".d-flex.align-items-center.justify-content-center a")
       .text()
       .replace(/[\n\t\ ]/g, "");
     const userId = Number(
