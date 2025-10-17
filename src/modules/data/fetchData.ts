@@ -37,7 +37,9 @@ export const fetchUserData = async (): Promise<UserData> => {
 };
 
 const getUserClassId = (): number => {
-  const userClassId = $(".d-flex.align-items-center.justify-content-center a")
+  const userClassId = $(
+    ".d-flex.align-items-center.justify-content-center a.fw400"
+  )
     .attr("class")
     .split(/\s+/)[0];
   const className = [
@@ -221,6 +223,7 @@ const defaultSettingData: Settings = {
   },
   betcard: {
     enabledBetCardModule: true,
+    enabledPlaceCardModule: true,
   },
   others: {
     notificationSound: "noti.mp3",

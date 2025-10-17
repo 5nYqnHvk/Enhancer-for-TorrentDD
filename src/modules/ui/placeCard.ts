@@ -26,7 +26,7 @@ let placeBetTimer: NodeJS.Timeout | null = null;
 let isBetting = false;
 
 export const initPlaceCardModule = async () => {
-  if (!settingData.betcard.enabledBetCardModule) return;
+  if (!settingData.betcard.enabledPlaceCardModule) return;
   initCard();
 };
 

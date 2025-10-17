@@ -59,6 +59,7 @@ export interface TicketSettings {
 
 export interface BetCardSettings {
   enabledBetCardModule: boolean;
+  enabledPlaceCardModule: boolean;
 }
 
 export interface OtherSettings {

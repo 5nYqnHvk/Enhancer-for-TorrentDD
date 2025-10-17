@@ -218,17 +218,25 @@ const initSettingButton = () => {
 
         <hr />
         <!-- grp 5 -->
-        <h6 class="text-primary mb-2">ระบบ BetCard</h6>
+        <h6 class="text-primary mb-2">ระบบ Battle Card</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledPlaceCardModule">
+                <input type="checkbox" class="form-check-input" id="enabledPlaceCardModule" ${
+                  settingData.betcard.enabledPlaceCardModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบวางไพ่ <i class="input-helper"></i></label>
+            </div>
+        </div>
         <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="enabledBetCardModule">
                 <input type="checkbox" class="form-check-input" id="enabledBetCardModule" ${
                   settingData.betcard.enabledBetCardModule ? "checked" : ""
                 } />
-                เปิดใช้งานระบบ BetCard <i class="input-helper"></i></label>
+                เปิดใช้งานระบบค้นหาไพ่ <i class="input-helper"></i></label>
             </div>
         </div>
-
         <hr />
         <!-- grp 6 -->
         <h6 class="text-primary mb-2">อื่นๆ</h6>
@@ -322,6 +330,9 @@ const initSettingButton = () => {
 
         settingData.betcard.enabledBetCardModule = $(
           "#enabledBetCardModule"
+        ).prop("checked");
+        settingData.betcard.enabledPlaceCardModule = $(
+          "#enabledPlaceCardModule"
         ).prop("checked");
 
         settingData.others.notificationSound = $(
