@@ -12,9 +12,8 @@ export const fetchUserData = async (): Promise<UserData> => {
   const logger = createLogger("User");
 
   try {
-    const username = $(
-      ".d-flex.align-items-center.justify-content-center a.fw400"
-    )
+    const username = $("div.profile-name")
+      .find(".d-flex.align-items-center.justify-content-center a.fw400")
       .text()
       .replace(/[\n\t\ ]/g, "");
     const userId = Number(
@@ -37,9 +36,8 @@ export const fetchUserData = async (): Promise<UserData> => {
 };
 
 const getUserClassId = (): number => {
-  const userClassId = $(
-    ".d-flex.align-items-center.justify-content-center a.fw400"
-  )
+  const userClassId = $("div.profile-name")
+    .find(".d-flex.align-items-center.justify-content-center a.fw400")
     .attr("class")
     .split(/\s+/)[0];
   const className = [
