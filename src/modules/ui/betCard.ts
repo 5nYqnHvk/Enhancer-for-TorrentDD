@@ -163,12 +163,8 @@ const initCard = () => {
     };
     cardData.push(obj);
 
-    if (user.username != username) {
-      playerList.indexOf(username) === -1 ? playerList.push(username) : null;
-    }
+    playerList.indexOf(username) === -1 ? playerList.push(username) : null;
   });
-
-  $(cardCount).text(`ไพ่ทั้งหมด: ${cardData.length} ใบ`);
 
   $.each(playerList, (_index, player) => {
     $(betPlayerE).append(
@@ -181,7 +177,8 @@ const initCard = () => {
 
   betPlayerE.addEventListener("change", () => onSelectChange());
   betPriceE.addEventListener("change", () => onSelectChange());
-  onSelectChange();
+  updateCard();
+  $(".mt-3.text-center").remove();
 };
 
 const onSelectChange = () => {
@@ -249,8 +246,15 @@ const onSelectChange = () => {
       push = false;
     }
   });
-  $(cardCount).text(`ไพ่ทั้งหมด: ${count} ใบ`);
-  logger.info(`พบไพ่ทั้งหมด ${count} ใบ`);
+
+  logger.info(`พบไพ่ทั้งหมด ${cardData.length} ใบ`);
+
+  if ($(betPlayerE).val() === "all" && $(betPriceE).val() === "all") {
+    $(cardCount).text(`ไพ่ทั้งหมด: ${cardData.length} ใบ`);
+  } else {
+    $(cardCount).text(`ไพ่ที่ค้นหา: ${count}/${cardData.length} ใบ`);
+  }
+
   $.each($(".btn-bet"), (_index, button) => {
     button.addEventListener("click", async () => await bet(Number(button.id)));
   });
@@ -284,47 +288,64 @@ const updateCard = async () => {
   cardData = [];
   playerList = [];
 
-  const getCard = await fetch("card_vs_player.php");
-  const getCardBody = await getCard.text();
-
+  // ✅ ดึงหน้าแรก
+  const res = await fetch(window.location.href);
+  const html = await res.text();
   const parser = new DOMParser();
-  let doc = parser.parseFromString(getCardBody, "text/html");
+  const doc = parser.parseFromString(html, "text/html");
 
-  if ($(doc).find("table tbody").length == 0) return;
-  if ($(doc).find("table tbody tr").length == 0) return;
+  // ✅ รวมลิงก์ของทุกหน้า (รวม active ด้วย)
+  const pageLinks = $(doc)
+    .find(".mt-1.dp-hide-3 .page-item a")
+    .map((i, a) => a.href)
+    .get();
 
-  let items = $(doc).find("table tbody tr");
-  $.each(items, async (index, item) => {
-    let id = $(item)
-      .find("td")[0]
-      .innerText.replace(/[\n\t]/g, "");
-    let price = $(item)
-      .find("td")[1]
-      .innerText.replace(/[\n\t]/g, "");
-    let username = $(item)
-      .find("td")[2]
-      .innerText.replace(/[\n\t]/g, "");
-    let userHtml = $(item)
-      .find("td")[2]
-      .innerHTML.replace(/[\n\t]/g, "");
-    let date = $(item)
-      .find("td")[3]
-      .innerHTML.replace(/[\n\t]/g, "");
+  // ✅ ถ้าไม่มี pagination ให้ใช้หน้าเดียว
+  if (pageLinks.length === 0) pageLinks.push(window.location.href);
 
-    let obj = {
-      id: id,
-      price: price,
-      username: username,
-      userHtml: userHtml,
-      date: date,
-    };
-    cardData.push(obj);
+  // ✅ ดึงทุกหน้าทีละหน้า
+  for (const link of pageLinks) {
+    const res = await fetch(link);
+    const html = await res.text();
 
-    if (user.username != username) {
-      playerList.indexOf(username) === -1 ? playerList.push(username) : null;
+    const d = parser.parseFromString(html, "text/html");
+
+    const rows = $(d).find("table tbody tr");
+    if (rows.length === 0) continue;
+
+    for (const tr of rows) {
+      const $td = $(tr).find("td");
+      const obj = {
+        id: $td[0]?.innerText.trim(),
+        price: $td[1]?.innerText.trim(),
+        username: $td[2]?.innerText.trim(),
+        userHtml: $td[2]?.innerHTML.trim(),
+        date: $td[3]?.innerHTML.trim(),
+      };
+      cardData.push(obj);
+
+      if (!playerList.includes(obj.username)) {
+        playerList.push(obj.username);
+      }
     }
+  }
+
+  $(betPlayerE).empty();
+  $(betPlayerE).append(
+    $("<option>", {
+      value: "all",
+      text: "ทั้งหมด",
+    })
+  );
+
+  $.each(playerList, (_index, player) => {
+    $(betPlayerE).append(
+      $("<option>", {
+        value: player,
+        text: player,
+      })
+    );
   });
-  $(cardCount).text(`ไพ่ทั้งหมด: ${cardData.length} ใบ`);
   onSelectChange();
 };
 
