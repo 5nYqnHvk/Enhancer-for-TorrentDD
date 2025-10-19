@@ -187,7 +187,7 @@ export const fetchTicketData = async (): Promise<TicketData> => {
   const tickets = Number(ticketButton.text().split(" ")[1]);
 
   return {
-    ready: tickets > 0 ? true : false,
+    ready: ticketButton[0].disabled === false && tickets > 0 ? true : false,
     quantityReady: tickets,
   };
 };
