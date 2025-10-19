@@ -35,7 +35,7 @@ export const initRoutes = async () => {
     },
     {
       name: "Torrent",
-      match: /^\/(browse|browse18)\.php(?:\?[&]?page=.*)?$/,
+      match: /^\/(browse|browse18)\.php(?:\?.*)?$/,
       init: async () => initTorrentModule(),
     },
     {
