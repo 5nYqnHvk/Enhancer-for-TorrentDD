@@ -196,7 +196,7 @@ const defaultSettingData: Settings = {
   torrent: {
     enabledTorrentModule: true,
     showTorrentImage: true,
-    showDownloadButton: false,
+    showDownloadButton: true,
     showRateButton: false,
     updatePeerslist: true,
   },

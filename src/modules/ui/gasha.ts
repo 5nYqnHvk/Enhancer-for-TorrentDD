@@ -21,9 +21,6 @@ export const initGashaModule = async () => {
   initGashaLog();
 };
 
-// gashalog
-// format return from storage [{"type":"C",img:"money.gif","txt":"1,000 Zen",date: new Date()}]
-// sync to cloud firebase (soon)
 const initGashaLog = async () => {
   const newCard = $(".card").last().after(`
         <div class="card mt-3"><div class="card-body">

@@ -3,7 +3,7 @@ import { createLogger } from "../../utils/logger";
 import { fetchUserData, fetctSettingData } from "../data/fetchData";
 import { UserData } from "../data/models";
 
-const logger = createLogger("betCard");
+const logger = createLogger("BetCard");
 const settingData = await fetctSettingData();
 
 let user: UserData;

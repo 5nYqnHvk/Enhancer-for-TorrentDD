@@ -7,6 +7,7 @@ declare global {
   }
   interface JQuery {
     modal(action?: string): JQuery;
+    tooltip(): JQuery;
   }
 }
 

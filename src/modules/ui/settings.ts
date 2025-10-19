@@ -51,7 +51,7 @@ const initSettingButton = () => {
         <hr />
 
         <!-- grp 1 -->
-        <!-- <h6 class="text-primary mb-2">ระบบ Torrents</h6>
+        <h6 class="text-primary mb-2">ระบบ Torrents</h6>
         <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="enabledTorrentModule">
@@ -63,15 +63,6 @@ const initSettingButton = () => {
         </div>
         <div class="form-group">
             <div class="form-check form-check-flat">
-            <label class="form-check-label" for="showTorrentImage">
-                <input type="checkbox" class="form-check-input" id="showTorrentImage" ${
-                  settingData.torrent.showTorrentImage ? "checked" : ""
-                } />
-                แสดงรูปภาพ Torrent <i class="input-helper"></i></label>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="form-check form-check-flat">
             <label class="form-check-label" for="showDownloadButton">
                 <input type="checkbox" class="form-check-input" id="showDownloadButton" ${
                   settingData.torrent.showDownloadButton ? "checked" : ""
@@ -79,26 +70,17 @@ const initSettingButton = () => {
                 แสดงปุ่มดาวน์โหลด <i class="input-helper"></i></label>
             </div>
         </div>
-        <div class="form-group">
-            <div class="form-check form-check-flat">
-            <label class="form-check-label" for="showRateButton">
-                <input type="checkbox" class="form-check-input" id="showRateButton" ${
-                  settingData.torrent.showRateButton ? "checked" : ""
-                } ${userInfo.isPremium ? "" : "disabled"} />
-                แสดงปุ่มให้คะแนน <i class="input-helper"></i></label>
-            </div>
-        </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <div class="form-check form-check-flat">
             <label class="form-check-label" for="updatePeerslist">
                 <input type="checkbox" class="form-check-input" id="updatePeerslist" ${
                   settingData.torrent.updatePeerslist ? "checked" : ""
                 } />
-                อัปเดตรายชื่อ Peers <i class="input-helper"></i></label>
+                แสดงรายชื่อ Peers <i class="input-helper"></i></label>
             </div>
-        </div>
+        </div> -->
 
-        <hr /> -->
+        <hr />
         <!-- grp 2 -->
         <h6 class="text-primary mb-2">ระบบฟาร์ม</h6>
         <div class="form-group">
@@ -286,17 +268,12 @@ const initSettingButton = () => {
 
       // ปุ่มบันทึก settings
       $(document).on("click", "#saveSettings", async function () {
-        // อัปเดตค่า settings จาก input ตามที่คุณมีอยู่แล้ว
         settingData.torrent.enabledTorrentModule = $(
           "#enabledTorrentModule"
         ).prop("checked");
-        settingData.torrent.showTorrentImage =
-          $("#showTorrentImage").prop("checked");
         settingData.torrent.showDownloadButton = $("#showDownloadButton").prop(
           "checked"
         );
-        settingData.torrent.showRateButton =
-          $("#showRateButton").prop("checked");
         settingData.torrent.updatePeerslist =
           $("#updatePeerslist").prop("checked");
 

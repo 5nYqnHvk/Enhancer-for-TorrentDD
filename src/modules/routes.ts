@@ -4,6 +4,7 @@ import { initFarmModule } from "./ui/farm";
 import { initGashaModule } from "./ui/gasha";
 import { initPlaceCardModule } from "./ui/placeCard";
 import { initTicketModule } from "./ui/ticket";
+import { initTorrentModule } from "./ui/torrent";
 
 export const initRoutes = async () => {
   await routeLoader([
@@ -31,6 +32,16 @@ export const initRoutes = async () => {
       name: "BetCard",
       match: /^\/card_vs_player\.php(?:\?page=.*)?$/,
       init: async () => initbetCardModule(),
+    },
+    {
+      name: "Torrent",
+      match: /^\/(browse|browse18)\.php(?:\?[&]?page=.*)?$/,
+      init: async () => initTorrentModule(),
+    },
+    {
+      name: "Torrent",
+      match: /^\/(details)\.php(?:\?[&]?id=.*)?$/,
+      init: async () => initTorrentModule(),
     },
   ]);
 };
