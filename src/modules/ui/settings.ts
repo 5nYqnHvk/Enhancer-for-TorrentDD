@@ -426,7 +426,7 @@ const updateSettings = async () => {
   );
   $("#showDownloadButton").prop(
     "checked",
-    settingData.torrent.enabledTorrentModule,
+    settingData.torrent.showDownloadButton,
   );
   $("#updatePeerslist").prop("checked", settingData.torrent.updatePeerslist);
 
