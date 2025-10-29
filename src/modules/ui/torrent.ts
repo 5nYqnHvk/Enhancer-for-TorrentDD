@@ -77,7 +77,7 @@ const initDownloadButton = async () => {
 const initDownloadButtonDetails = async () => {
   const hasNativeDownload =
     $(".wrapper.d-flex.align-items-center.py-2.border-bottom").find(
-      "i.fal.fa-magnet"
+      "i.fal.fa-magnet",
     ).length > 0;
   if (hasNativeDownload) return;
   const downloadBtn = $(".btn.btn-inverse-success.border.border-success");
@@ -85,7 +85,7 @@ const initDownloadButtonDetails = async () => {
   const mangnetBtn = $(
     `<button type="button" class="btn btn-outline-success ml-2 border border-success">
         <i class="fal fa-magnet"></i>Magnet
-    </button>`
+    </button>`,
   );
 
   downloadBtn.after(mangnetBtn);
@@ -131,7 +131,7 @@ const download = async (url: string): Promise<void> => {
     logger.info(`กำลังโหลดไฟล์`);
     if (!getFile.ok) {
       logger.error(`ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`);
-      await toastr.error(
+      toastr.error(
         `ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`,
         "ดาวน์โหลดไม่สำเร็จ!",
         {
@@ -150,14 +150,14 @@ const download = async (url: string): Promise<void> => {
           hideEasing: "linear",
           showMethod: "fadeIn",
           hideMethod: "fadeOut",
-        }
+        },
       );
       return;
     }
     const fileUrl = `https://www.torrentdd.com/${getUrl}`;
     const $a = $(`<a href="${fileUrl}" download style="display:none"></a>`);
     logger.info(`สร้างปุ่มดาวน์โหลดแล้ว`);
-    await toastr.success(`คุณได้ดาวน์โหลดแล้ว`, "ดาวน์โหลดสำเร็จ!", {
+    toastr.success(`คุณได้ดาวน์โหลดแล้ว`, "ดาวน์โหลดสำเร็จ!", {
       closeButton: false,
       debug: false,
       newestOnTop: false,
@@ -189,7 +189,7 @@ const magnet = async (url: string): Promise<void> => {
     logger.info(`กำลังโหลดไฟล์`);
     if (!getFile.ok) {
       logger.error(`ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`);
-      await toastr.error(
+      toastr.error(
         `ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`,
         "Error!",
         {
@@ -208,7 +208,7 @@ const magnet = async (url: string): Promise<void> => {
           hideEasing: "linear",
           showMethod: "fadeIn",
           hideMethod: "fadeOut",
-        }
+        },
       );
       return;
     }
@@ -218,7 +218,7 @@ const magnet = async (url: string): Promise<void> => {
 
     if (!infoSlice) {
       logger.error(`ไม่พบ field 'info' ในไฟล์ .torrent`);
-      await toastr.error(
+      toastr.error(
         `ไม่พบ field 'info' ในไฟล์ .torrent`,
         "ดาวน์โหลดไม่สำเร็จ!",
         {
@@ -237,7 +237,7 @@ const magnet = async (url: string): Promise<void> => {
           hideEasing: "linear",
           showMethod: "fadeIn",
           hideMethod: "fadeOut",
-        }
+        },
       );
       return;
     }
@@ -254,7 +254,7 @@ const magnet = async (url: string): Promise<void> => {
 
     const $a = $(`<a href="${magnet}" style="display:none"></a>`);
     logger.info(`สร้างปุ่มดาวน์โหลดแล้ว`);
-    await toastr.success(`คุณได้ดาวน์โหลดแล้ว`, "ดาวน์โหลดสำเร็จ!", {
+    toastr.success(`คุณได้ดาวน์โหลดแล้ว`, "ดาวน์โหลดสำเร็จ!", {
       closeButton: false,
       debug: false,
       newestOnTop: false,

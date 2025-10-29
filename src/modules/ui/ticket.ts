@@ -12,15 +12,17 @@ export const initTicketModule = async () => {
 
 export const initTicketButton = () => {
   const ticketButton = $(".card-body.text-center").find("button");
-  const tickets = Number(ticketButton.text().split(" ")[1]);
-  logger.info(`ตั่วที่สามารถรับได้ ${tickets} ชิ้น`);
+  ticketButton.removeClass("get-ticket");
+
   if (ticketButton[0].disabled === true) {
     ticketButton.html("คุณได้รับตั๋วสุ่มกาชาไปแล้ว");
     ticketButton.removeClass("btn-success");
     ticketButton.addClass("btn-danger");
+  } else {
+    const tickets = Number(ticketButton.text().split(" ")[1]);
+    logger.info(`ตั่วที่สามารถรับได้ ${tickets} ชิ้น`);
   }
 
-  ticketButton.removeClass("get-ticket");
   ticketButton[0].addEventListener("click", async () => await getTicket());
 };
 
@@ -36,19 +38,19 @@ const getTicket = async () => {
       await Swal.fire(
         "Good job!",
         'รับ <i class="fal fa-tag fa-md mr-1"></i>รับตั๋วสุ่มกาชา เรียบร้อยแล้ว!',
-        "warning"
+        "warning",
       );
       ticketButton[0].disabled = true;
-      await GM_setValue("ticketNotificationDate", Date.now());
+      GM_setValue("ticketNotificationDate", Date.now());
       break;
     case "error-1":
       logger.error(
-        `คุณจะต้องปล่อยไฟล์ 5 ไฟล์ขึ้นไป และ Connect มากว่า 3 ชั่วโมง`
+        `คุณจะต้องปล่อยไฟล์ 5 ไฟล์ขึ้นไป และ Connect มากว่า 3 ชั่วโมง`,
       );
       await Swal.fire(
         "Error!",
         "คุณจะต้องปล่อยไฟล์ 5 ไฟล์ขึ้นไป และ Connect มากว่า 3 ชั่วโมง",
-        "error"
+        "error",
       );
       ticketButton[0].disabled = true;
       break;
@@ -57,7 +59,7 @@ const getTicket = async () => {
       await Swal.fire(
         "Error!",
         "คุณรับตั๋วสุ่มกาชาไปแล้ว กรุณารับในรอบถัดไปค่ะ",
-        "error"
+        "error",
       );
       ticketButton[0].disabled = true;
       break;
@@ -66,7 +68,7 @@ const getTicket = async () => {
       await Swal.fire(
         "Error!",
         "การรับตั๋วสุ่มกาชา จะต้องห่างกันอย่างน้อย 3 ชั่วโมง",
-        "error"
+        "error",
       );
       ticketButton[0].disabled = true;
       break;

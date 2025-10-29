@@ -1,12 +1,11 @@
 import { waitForBootstrap } from "../../utils/hook";
 import { fetchUserData, fetctSettingData } from "../data/fetchData";
-import { Settings } from "../data/models";
 import { createLogger } from "../../utils/logger";
 import swal from "sweetalert2";
 
 const logger = createLogger("Settings");
 const userInfo = await fetchUserData();
-const settingData = await fetctSettingData();
+let settingData = await fetctSettingData();
 
 const sounds: Record<string, HTMLAudioElement> = {
   "noti.mp3": new Audio("https://static.5ny.site/assets/music/noti.mp3"),
@@ -28,6 +27,8 @@ const initSettingButton = () => {
       "data-toggle": "modal",
       "data-target": "#tddSettingsModal",
     });
+
+    $newItem.on("click", async () => await updateSettings());
 
     const $divider = $("<div>", { class: "dropdown-divider" });
     $menu.children().eq(10).after($divider, $newItem);
@@ -195,6 +196,8 @@ const initSettingButton = () => {
                 แสดงประวัติกาชา <i class="input-helper"></i></label>
             </div>
         </div>
+        <button type="button" class="btn btn-block btn-primary" id="importGashaData">นำเข้าข้อมูลกาชา</button>
+        <button type="button" class="btn btn-block btn-info" id="exportGashaData">ส่งออกข้อมูลกาชา</button>
         <button type="button" class="btn btn-block btn-danger" id="resetGashaData">ลบข้อมูลกาชา</button>
 
 
@@ -252,7 +255,7 @@ const initSettingButton = () => {
       </div>
     </div>
   </div>
-</div>`)
+</div>`),
     );
 
     $("#playSound").on("click", () => {
@@ -264,15 +267,17 @@ const initSettingButton = () => {
     });
 
     waitForBootstrap(() => {
+      const $importGashaBtn = $("#importGashaData");
+      const $exportGashaBtn = $("#exportGashaData");
       const $resetGashaBtn = $("#resetGashaData");
 
       // ปุ่มบันทึก settings
       $(document).on("click", "#saveSettings", async function () {
         settingData.torrent.enabledTorrentModule = $(
-          "#enabledTorrentModule"
+          "#enabledTorrentModule",
         ).prop("checked");
         settingData.torrent.showDownloadButton = $("#showDownloadButton").prop(
-          "checked"
+          "checked",
         );
         settingData.torrent.updatePeerslist =
           $("#updatePeerslist").prop("checked");
@@ -288,11 +293,11 @@ const initSettingButton = () => {
           parseInt($("#minPlotReadyForNotification").val() as string) || 1;
 
         settingData.ticket.enabledTicketModule = $("#enabledTicketModule").prop(
-          "checked"
+          "checked",
         );
         settingData.ticket.autoTicket = $("#autoTicket").prop("checked");
         settingData.ticket.notificationTicket = $("#notificationTicket").prop(
-          "checked"
+          "checked",
         );
         settingData.ticket.ticketUpdateInterval =
           parseInt($("#ticketUpdateInterval").val() as string) || 10;
@@ -300,33 +305,93 @@ const initSettingButton = () => {
           parseInt($("#minTicketReadyForNotification").val() as string) || 1;
 
         settingData.gasha.enabledGashaModule = $("#enabledGashaModule").prop(
-          "checked"
+          "checked",
         );
         settingData.gasha.saveGashaLog = $("#saveGashaLog").prop("checked");
         settingData.gasha.showGashaLog = $("#showGashaLog").prop("checked");
 
         settingData.betcard.enabledBetCardModule = $(
-          "#enabledBetCardModule"
+          "#enabledBetCardModule",
         ).prop("checked");
         settingData.betcard.enabledPlaceCardModule = $(
-          "#enabledPlaceCardModule"
+          "#enabledPlaceCardModule",
         ).prop("checked");
 
         settingData.others.notificationSound = $(
-          "#notificationSound"
+          "#notificationSound",
         ).val() as string;
 
-        await GM_setValue("settings", settingData);
-        swal.fire(
+        GM_setValue("settings", settingData);
+        await swal.fire(
           "บันทึกข้อมูลสำเร็จ!",
           "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
-          "success"
+          "success",
         );
         $("#tddSettingsModal").modal("hide");
       });
 
-      $resetGashaBtn.on("click", function () {
-        swal
+      $importGashaBtn.on("click", async () => {
+        const $input = $(
+          '<input type="file" accept=".txt" style="display:none">',
+        );
+        $("body").append($input);
+
+        $input.on("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const text = await file.text(); // อ่านเนื้อหาไฟล์
+          await swal
+            .fire({
+              title: "คุณต้องการนำเข้าข้อมูลกาชาหรือไม่!",
+              text: "ถ้าคุณมีข้อมูลกาชาอยู่แล้วต้องการนำเข้าข้อมูลที่คุณนำเข้าอาจเขียนทับข้อมูลเก่าได้",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonText: "นำเข้า",
+              cancelButtonText: "ยกเลิก",
+              confirmButtonColor: "#FF0000",
+            })
+            .then(async (result) => {
+              $("#tddSettingsModal").modal("hide");
+              if (result.isConfirmed) {
+                try {
+                  const data = JSON.parse(text);
+                  GM_setValue("gashaData", data);
+                  await swal.fire(
+                    "นำเข้าข้อมูลสำเร็จ!",
+                    "นำเข้าข้อมูลกาชาสำเร็จ!",
+                    "success",
+                  );
+                } catch (err) {
+                  await swal.fire(
+                    "นำเข้าข้อมูลไม่สำเร็จ!",
+                    "ไฟล์ไม่ถูกต้องหรือไม่ใช่ JSON ที่ถูกต้อง",
+                    "error",
+                  );
+                  console.error(err);
+                }
+              }
+            });
+
+          $input.remove();
+        });
+
+        $input[0].click();
+      });
+
+      $exportGashaBtn.on("click", async () => {
+        const gashaData = JSON.stringify(GM_getValue("gashaData", []));
+        const blob = new Blob([gashaData], { type: "text/plain" });
+        const $a = $(
+          `<a href="${URL.createObjectURL(blob)}" download="gasha.txt" style="display:none"></a>`,
+        );
+        $("body").append($a);
+        $a[0].click();
+        $a.remove();
+      });
+
+      $resetGashaBtn.on("click", async () => {
+        await swal
           .fire({
             title: "คุณต้องการลบข้อมูลกาชาหรือไม่!",
             text: "ถ้าลบแล้วจะไม่สามารถกู้ข้อมูลคืนได้",
@@ -339,15 +404,69 @@ const initSettingButton = () => {
           .then(async (result) => {
             $("#tddSettingsModal").modal("hide");
             if (result.isConfirmed) {
-              await GM_setValue("gashaData", []);
-              swal.fire(
+              GM_setValue("gashaData", []);
+              await swal.fire(
                 "ลบข้อมูลสำเร็จ!",
                 "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
-                "success"
+                "success",
               );
             }
           });
       });
     });
   }
+};
+
+const updateSettings = async () => {
+  settingData = await fetctSettingData();
+
+  $("#enabledTorrentModule").prop(
+    "checked",
+    settingData.torrent.enabledTorrentModule,
+  );
+  $("#showDownloadButton").prop(
+    "checked",
+    settingData.torrent.enabledTorrentModule,
+  );
+  $("#updatePeerslist").prop("checked", settingData.torrent.updatePeerslist);
+
+  $("#enabledFarmModule").prop("checked", settingData.farm.enabledFarmModule);
+  $("#autoFarm").prop("checked", settingData.farm.autoFarm);
+  $("#notificationFarm").prop("checked", settingData.farm.notificationFarm);
+  $("#farmUpdateInterval").val(settingData.farm.farmUpdateInterval);
+  $("#minPlotReadyForNotification").val(
+    settingData.farm.minPlotReadyForNotification,
+  );
+
+  $("#enabledTicketModule").prop(
+    "checked",
+    settingData.ticket.enabledTicketModule,
+  );
+  $("#autoTicket").prop("checked", settingData.ticket.autoTicket);
+  $("#notificationTicket").prop(
+    "checked",
+    settingData.ticket.notificationTicket,
+  );
+  $("#ticketUpdateInterval").val(settingData.ticket.ticketUpdateInterval);
+  $("#minTicketReadyForNotification").val(
+    settingData.ticket.minTicketReadyForNotification,
+  );
+
+  $("#enabledGashaModule").prop(
+    "checked",
+    settingData.gasha.enabledGashaModule,
+  );
+  $("#saveGashaLog").prop("checked", settingData.gasha.saveGashaLog);
+  $("#showGashaLog").prop("checked", settingData.gasha.showGashaLog);
+
+  $("#enabledBetCardModule").prop(
+    "checked",
+    settingData.betcard.enabledBetCardModule,
+  );
+  $("#enabledPlaceCardModule").prop(
+    "checked",
+    settingData.betcard.enabledPlaceCardModule,
+  );
+
+  $("#notificationSound").val(settingData.others.notificationSound);
 };

@@ -19,7 +19,7 @@ export const fetchUserData = async (): Promise<UserData> => {
     const userId = Number(
       $("a[href^='mypeers.php?userid=']")
         .attr("href")
-        .replace("mypeers.php?userid=", "")
+        .replace("mypeers.php?userid=", ""),
     );
     const userClassId = getUserClassId();
     const isPremium = true;
@@ -229,9 +229,9 @@ const defaultSettingData: Settings = {
 };
 
 export const fetctSettingData = async () => {
-  const data = await GM_getValue("settings", defaultSettingData);
+  const data = GM_getValue("settings", defaultSettingData);
   const fixedData = mergeWithDefault(data, defaultSettingData);
-  await GM_setValue("settings", fixedData);
+  GM_setValue("settings", fixedData);
   return fixedData;
 };
 

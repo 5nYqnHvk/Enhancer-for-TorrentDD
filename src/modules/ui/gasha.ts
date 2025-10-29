@@ -35,6 +35,7 @@ const initGashaLog = async () => {
                                 <th scope="col">ได้รับ</th>
                                 <th scope="col">รูป</th>
                                 <th scope="col">วันเวลา</th>
+                                <th scope="col">ลบ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,9 +70,39 @@ const initGashaLog = async () => {
     td3.appendChild(td_img);
     const td4 = tr.insertCell();
     const td_date = document.createTextNode(
-      new Date(data.date).toLocaleString("th")
+      new Date(data.date).toLocaleString("th"),
     );
     td4.appendChild(td_date);
+    const td5 = tr.insertCell();
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn btn-danger btn-sm";
+    delBtn.textContent = "ลบ";
+    delBtn.onclick = async () => {
+      await swal
+        .fire({
+          title: `คุณต้องการลบ ${data.txt} หรือไม่!`,
+          text: "ถ้าลบแล้วจะไม่สามารถกู้ข้อมูลคืนได้",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "ลบ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#FF0000",
+        })
+        .then(async (result) => {
+          $("#tddSettingsModal").modal("hide");
+          if (result.isConfirmed) {
+            gashaHistoryData.splice(id - 1, 1);
+            const allData: GashaData[] = GM_getValue<GashaData[]>(
+              "gashaData",
+              [],
+            );
+            const updatedData = allData.filter((d) => d.date !== data.date);
+            GM_setValue("gashaData", updatedData);
+            tr.remove();
+          }
+        });
+    };
+    td5.appendChild(delBtn);
   });
 };
 
@@ -81,23 +112,23 @@ const initGashaButton = () => {
   const buttonGroup = $(".text-center.mt-3.f12").next();
 
   buttonSpin = $(
-    `<button class="btn btn-info btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>Spin</button>`
+    `<button class="btn btn-info btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>Spin</button>`,
   );
   buttonSpinSkip = $(
-    `<button class="btn btn-warning btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>Spin Skip</button>`
+    `<button class="btn btn-warning btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>Spin Skip</button>`,
   );
   buttonSpinTest = $(
-    `<button class="btn btn-success btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>ทดสอบ</button>`
+    `<button class="btn btn-success btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>ทดสอบ</button>`,
   );
   buttonSpinTestSkip = $(
-    `<button class="btn btn-warning btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>ทดสอบ Skip</button>`
+    `<button class="btn btn-warning btn-spin ml-1 mr-1"><i class='far fa-sync-alt'></i>ทดสอบ Skip</button>`,
   );
 
   buttonGroup.append(
     buttonSpin,
     buttonSpinSkip,
     buttonSpinTest,
-    buttonSpinTestSkip
+    buttonSpinTestSkip,
   );
 
   buttonSpin.on("click", () => spinBtn(""));
@@ -120,7 +151,7 @@ const toggleButtons = (state: boolean) => {
   }
 };
 
-const spinBtn = (test = "", skip = false) => {
+const spinBtn = async (test = "", skip = false) => {
   try {
     toggleButtons(true);
 
@@ -135,7 +166,7 @@ const spinBtn = (test = "", skip = false) => {
     setTimeout(async () => {
       try {
         const gasha = await fetch(
-          `${getLocation().pathname}?action=spin&test=${test}`
+          `${getLocation().pathname}?action=spin&test=${test}`,
         );
         const gashaData = await gasha.json();
 
@@ -144,7 +175,7 @@ const spinBtn = (test = "", skip = false) => {
           await swal.fire(
             "คุณมี Coin ไม่พอ!",
             "กรุณาตรวจสอบด้วยค่ะ",
-            "warning"
+            "warning",
           );
           toggleButtons(false);
           return;
@@ -155,7 +186,7 @@ const spinBtn = (test = "", skip = false) => {
           await swal.fire(
             "คุณมี Ticket ไม่พอ!",
             "กรุณาตรวจสอบด้วยค่ะ",
-            "warning"
+            "warning",
           );
           toggleButtons(false);
           return;
@@ -190,10 +221,10 @@ const spinBtn = (test = "", skip = false) => {
               $("#ticket")[0],
               Number(ticket),
               Number(ticket) - 10,
-              500
+              500,
             );
             logger.info(
-              `อัปเดท Ticket ${ticket} - 10 = ${Number(ticket) - 10}`
+              `อัปเดท Ticket ${ticket} - 10 = ${Number(ticket) - 10}`,
             );
           }
 
@@ -211,8 +242,8 @@ const spinBtn = (test = "", skip = false) => {
               toggleButtons(false);
             }
           } else {
-            setTimeout(() => {
-              swal.fire({
+            setTimeout(async () => {
+              await swal.fire({
                 title: "สิ่งที่คุณได้รับ",
                 text: gashaData.txt,
                 imageUrl: `images/pets/${gashaData.img}`,
@@ -234,18 +265,18 @@ const spinBtn = (test = "", skip = false) => {
       } catch (err) {
         logger.error("Error in spinBtn", err);
         toggleButtons(false);
-        swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถหมุนกาชาได้", "error");
+        await swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถหมุนกาชาได้", "error");
       }
     }, 500);
   } catch (err) {
     logger.error("Error in spinBtn", err);
     toggleButtons(false);
-    swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถเริ่มการหมุนได้", "error");
+    await swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถเริ่มการหมุนได้", "error");
   }
 };
 
 const getGashaData = async (): Promise<GashaData[]> => {
-  const gashaData = await GM_getValue<GashaData[]>("gashaData", []);
+  const gashaData = GM_getValue<GashaData[]>("gashaData", []);
   return gashaData;
 };
 
@@ -257,9 +288,9 @@ const saveGashaData = async (gashaData: any) => {
     date: Date.now(),
   };
 
-  const updateGashaData: GashaData[] = await GM_getValue<GashaData[]>(
+  const updateGashaData: GashaData[] = GM_getValue<GashaData[]>(
     "gashaData",
-    []
+    [],
   );
   updateGashaData.push(newData);
   GM_setValue("gashaData", updateGashaData);

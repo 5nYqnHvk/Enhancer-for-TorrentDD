@@ -124,7 +124,7 @@ const initCard = () => {
         <div class="d-flex justify-content-around mt-4">
           <button class="btn btn-block btn-success" id="loadCard">ค้นหาไพ่ใหม่</button>
         </div>
-    </div>`
+    </div>`,
   );
 
   betPlayerE = $(".alert #betPlayer")[0];
@@ -171,7 +171,7 @@ const initCard = () => {
       $("<option>", {
         value: player,
         text: player,
-      })
+      }),
     );
   });
 
@@ -195,7 +195,7 @@ const onSelectChange = () => {
       ? "="
       : ">";
     const priceSelectedValue = Number(
-      priceSelected.toString().slice(1).replace(/,/g, "")
+      priceSelected.toString().slice(1).replace(/,/g, ""),
     );
 
     if (playerSelected === "all") {
@@ -335,7 +335,7 @@ const updateCard = async () => {
     $("<option>", {
       value: "all",
       text: "ทั้งหมด",
-    })
+    }),
   );
 
   $.each(playerList, (_index, player) => {
@@ -343,7 +343,7 @@ const updateCard = async () => {
       $("<option>", {
         value: player,
         text: player,
-      })
+      }),
     );
   });
   onSelectChange();
@@ -364,7 +364,7 @@ const bet = async (id: number) => {
     });
   if (notFound.length > 0) {
     logger.error(`ไม่พบรายการ ${id}`);
-    await toastr.error(`ไม่พบรายการ ${id}`, "Error!", {
+    toastr.error(`ไม่พบรายการ ${id}`, "Error!", {
       closeButton: false,
       debug: false,
       newestOnTop: false,
@@ -392,7 +392,7 @@ const bet = async (id: number) => {
     });
   if (notEnoughMoney.length > 0) {
     logger.error(`คุณมีเงินไม่พอ`);
-    await toastr.error("คุณมีเงินไม่พอ", "Error!", {
+    toastr.error("คุณมีเงินไม่พอ", "Error!", {
       closeButton: false,
       debug: false,
       newestOnTop: false,
@@ -423,7 +423,7 @@ const bet = async (id: number) => {
     });
   if (ownCard.length > 0) {
     logger.error(`ไม่สามารถเปิดไพ่ของคุณเองได้`);
-    await toastr.error("ไม่สามารถเปิดไพ่ของคุณเองได้", "Error!", {
+    toastr.error("ไม่สามารถเปิดไพ่ของคุณเองได้", "Error!", {
       closeButton: false,
       debug: false,
       newestOnTop: false,
@@ -460,27 +460,23 @@ const bet = async (id: number) => {
   let matchEnd = $(doc).find("tbody:eq(1) td:eq(1) div");
   if (matchEnd.length > 0) {
     logger.error(`รายการนี้แข่งขันจบแล้ว`);
-    await toastr.warning(
-      "รายการนี้แข่งขันจบแล้ว",
-      "ไม่พบการแข่งขัน " + id + "!",
-      {
-        closeButton: false,
-        debug: false,
-        newestOnTop: false,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        preventDuplicates: false,
-        onclick: null,
-        showDuration: 300,
-        hideDuration: 1000,
-        timeOut: 3000,
-        extendedTimeOut: 500,
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut",
-      }
-    );
+    toastr.warning("รายการนี้แข่งขันจบแล้ว", "ไม่พบการแข่งขัน " + id + "!", {
+      closeButton: false,
+      debug: false,
+      newestOnTop: false,
+      progressBar: true,
+      positionClass: "toast-top-right",
+      preventDuplicates: false,
+      onclick: null,
+      showDuration: 300,
+      hideDuration: 1000,
+      timeOut: 3000,
+      extendedTimeOut: 500,
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut",
+    });
     success = true;
   }
 
@@ -495,16 +491,18 @@ const bet = async (id: number) => {
 
   if (resultMatch == "คุณชนะ") {
     logger.info(
-      `คุณชนะ ${targetUsername} (${targetCard} แพ้ ${yourCard}) ได้รับ ${MatchPrice}`
+      `คุณชนะ ${targetUsername} (${targetCard} แพ้ ${yourCard}) ได้รับ ${MatchPrice}`,
     );
-    await toastr.success(
+    toastr.success(
       `คุณได้รับ ${MatchPrice}`,
       `คุณชนะ ${targetUsername} (<font color="${
         targetCard.includes("♦") || targetCard.includes("♥")
           ? "#ff0000"
           : "#000000"
       }">${targetCard}</font> แพ้ <font color="${
-        yourCard.includes("♦") || yourCard.includes("♥") ? "#ff0000" : "#000000"
+        yourCard.includes("♦") || yourCard.includes("♥")
+          ? "#ff0000"
+          : "#000000"
       }">${yourCard}</font>)!`,
       {
         closeButton: false,
@@ -522,32 +520,34 @@ const bet = async (id: number) => {
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
-      }
+      },
     );
     let money = $("#money").text().replace(/,/g, "");
     animateValue(
       $("#money")[0],
       Number(money),
       Number(money) + parseInt(MatchPrice.replace(/\D/g, "")),
-      500
+      500,
     );
     money = String(
       Number($("#money").text().replace(/,/g, "")) +
-        parseInt(MatchPrice.replace(/\D/g, ""))
+        parseInt(MatchPrice.replace(/\D/g, "")),
     );
     success = true;
   } else if (resultMatch == "คุณแพ้") {
     logger.info(
-      `คุณแพ้ ${targetUsername} (${targetCard} ชนะ ${yourCard}) เสีย ${MatchPrice}`
+      `คุณแพ้ ${targetUsername} (${targetCard} ชนะ ${yourCard}) เสีย ${MatchPrice}`,
     );
-    await toastr.error(
+    toastr.error(
       `คุณเสีย ${MatchPrice}`,
       `คุณแพ้ ${targetUsername} (<font color="${
         targetCard.includes("♦") || targetCard.includes("♥")
           ? "#ff0000"
           : "#000000"
       }">${targetCard}</font> ชนะ <font color="${
-        yourCard.includes("♦") || yourCard.includes("♥") ? "#ff0000" : "#000000"
+        yourCard.includes("♦") || yourCard.includes("♥")
+          ? "#ff0000"
+          : "#000000"
       }">${yourCard}</font>)!`,
       {
         closeButton: false,
@@ -565,18 +565,18 @@ const bet = async (id: number) => {
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
-      }
+      },
     );
     let money = $("#money").text().replace(/,/g, "");
     animateValue(
       $("#money")[0],
       Number(money),
       Number(money) - parseInt(MatchPrice.replace(/\D/g, "")),
-      500
+      500,
     );
     money = String(
       Number($("#money").text().replace(/,/g, "")) -
-        parseInt(MatchPrice.replace(/\D/g, ""))
+        parseInt(MatchPrice.replace(/\D/g, "")),
     );
     success = true;
   }

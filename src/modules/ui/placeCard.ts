@@ -17,7 +17,6 @@ let autoBetButton: HTMLElement;
 let placeBetArray: string[] = [];
 let counter = 0;
 let betNum = 0;
-let placeBetTime = new Date();
 let nextPlaceBetTime: Date = null;
 let placeBetIndex = 0;
 let placeBetPrice: string = null;
@@ -60,7 +59,7 @@ const initCard = () => {
             <div class="d-flex justify-content-center">
                 <button id="autoBet" class="btn btn-dark text-center f14 fw300 mt-3">เริ่มเดิมพัน</button>
             </div>
-        </div>`
+        </div>`,
   );
 
   statusBet = $(".alert #statusBet")[0];
@@ -218,7 +217,7 @@ const bet = async () => {
 
   nextPlaceBetTime = new Date();
   nextPlaceBetTime.setTime(
-    nextPlaceBetTime.getTime() + Number($(timeBet).val()) * 1000
+    nextPlaceBetTime.getTime() + Number($(timeBet).val()) * 1000,
   );
 
   if (placeBetIndex >= placeBetArray.length) {
@@ -234,13 +233,13 @@ const bet = async () => {
       $(statusNextBet).html(
         `เดิมพันครั้งต่อไป: 1/${placeBetArray.length} AT: ${
           placeBetArray[placeBetIndex - 1]
-        }`
+        }`,
       );
     } else {
       $(statusNextBet).html(
         `เดิมพันครั้งต่อไป: ${placeBetIndex}/${placeBetArray.length} AT: ${
           placeBetArray[placeBetIndex - 1]
-        }`
+        }`,
       );
     }
   }
@@ -250,13 +249,13 @@ const bet = async () => {
 
     try {
       const res = await fetch(
-        `https://www.torrentdd.com/card_vs_player.php?mod=take-create&bet=${placeBetPrice}`
+        `https://www.torrentdd.com/card_vs_player.php?mod=take-create&bet=${placeBetPrice}`,
       );
       const body = await res.text();
 
       if (body === "success") {
         logger.info(
-          `คุณวางไพ่แล้ว ${counter + 1}/${betNum} : ${placeBetPrice} Zen`
+          `คุณวางไพ่แล้ว ${counter + 1}/${betNum} : ${placeBetPrice} Zen`,
         );
         await toastr.success(
           "จำนวนเงินที่วาง " + placeBetPrice + " Zen",
@@ -277,18 +276,18 @@ const bet = async () => {
             hideEasing: "linear",
             showMethod: "fadeIn",
             hideMethod: "fadeOut",
-          }
+          },
         );
 
         let money = $("#money").text().replace(/,/g, "");
         const betValue = Number(
-          (placeBetPrice ?? "0").toString().replace(/,/g, "")
+          (placeBetPrice ?? "0").toString().replace(/,/g, ""),
         );
         animateValue(
           $("#money")[0],
           Number(money),
           Number(money) - betValue,
-          500
+          500,
         );
       } else {
         await toastr.error(
@@ -310,7 +309,7 @@ const bet = async () => {
             hideEasing: "linear",
             showMethod: "fadeIn",
             hideMethod: "fadeOut",
-          }
+          },
         );
       }
     } catch (err) {
