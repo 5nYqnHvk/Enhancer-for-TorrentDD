@@ -223,9 +223,31 @@ const initSettingButton = () => {
             </div>
         </div>
         <hr />
+
+        <!-- grp chat -->
+        <h6 class="text-primary mb-2">ระบบ Chat</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledChatModule">
+                <input type="checkbox" class="form-check-input" id="enabledChatModule" ${
+                  settingData.chat.enabledChatModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบแชท <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="sortUserOnline">
+                <input type="checkbox" class="form-check-input" id="sortUserOnline" ${
+                  settingData.chat.sortUserOnline ? "checked" : ""
+                } />
+                เรียงในหน้าแชท UserOnline <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
         <!-- grp 6 -->
         <h6 class="text-primary mb-2">อื่นๆ</h6>
-
         <div class="form-group">
           <label for="notificationSound">เสียงแจ้งเตือน</label>
           <div class="input-group">
@@ -316,6 +338,10 @@ const initSettingButton = () => {
         settingData.betcard.enabledPlaceCardModule = $(
           "#enabledPlaceCardModule",
         ).prop("checked");
+
+        settingData.chat.enabledChatModule =
+          $("#enabledChatModule").prop("checked");
+        settingData.chat.sortUserOnline = $("#sortUserOnline").prop("checked");
 
         settingData.others.notificationSound = $(
           "#notificationSound",
@@ -467,6 +493,9 @@ const updateSettings = async () => {
     "checked",
     settingData.betcard.enabledPlaceCardModule,
   );
+
+  $("#enabledChatModule").prop("checked", settingData.chat.enabledChatModule);
+  $("#sortUserOnline").prop("checked", settingData.chat.sortUserOnline);
 
   $("#notificationSound").val(settingData.others.notificationSound);
 };

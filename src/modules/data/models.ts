@@ -62,6 +62,11 @@ export interface BetCardSettings {
   enabledPlaceCardModule: boolean;
 }
 
+export interface ChatSettings {
+  enabledChatModule: boolean;
+  sortUserOnline: boolean;
+}
+
 export interface OtherSettings {
   notificationSound: string;
 }
@@ -72,6 +77,7 @@ export interface Settings {
   gasha: GashaSettings;
   ticket: TicketSettings;
   betcard: BetCardSettings;
+  chat: ChatSettings;
   others: OtherSettings;
 }
 

@@ -223,6 +223,10 @@ const defaultSettingData: Settings = {
     enabledBetCardModule: true,
     enabledPlaceCardModule: true,
   },
+  chat: {
+    enabledChatModule: true,
+    sortUserOnline: true,
+  },
   others: {
     notificationSound: "noti.mp3",
   },

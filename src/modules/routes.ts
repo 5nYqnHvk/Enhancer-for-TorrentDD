@@ -1,5 +1,6 @@
 import { routeLoader } from "../core/router";
 import { initbetCardModule } from "./ui/betCard";
+import { initChatModule } from "./ui/chat";
 import { initFarmModule } from "./ui/farm";
 import { initGashaModule } from "./ui/gasha";
 import { initPlaceCardModule } from "./ui/placeCard";
@@ -37,6 +38,11 @@ export const initRoutes = async () => {
       name: "Torrent",
       match: /^\/(browse|browse18|details)\.php(?:\?.*)?$/,
       init: async () => initTorrentModule(),
+    },
+    {
+      name: "Chat",
+      match: /^\/chat\.php(?:\?.*)?$/,
+      init: async () => initChatModule(),
     },
   ]);
 };

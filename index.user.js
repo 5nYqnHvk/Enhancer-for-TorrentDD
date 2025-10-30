@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      2.3.3
+// @version      2.3.4
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -13,7 +13,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.3.3
+// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.3.4
 // @downloadURL  https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @updateURL    https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
@@ -49,4 +49,7 @@ Changelog
 - เพิ่มปุ่มนำเข้าข้อมูลกาชา
 - เพิ่มปุ่มส่งออกข้อมูลกาชา
 - เพิ่มปุ่มลบข้อมูลกาชาในตาราง
+2.3.4
+- เพิ่มระบบแชท
+- เพิ่มเรียง useronline ในหน้าแชทตามยศและเรียงตาม A-Z
 */
