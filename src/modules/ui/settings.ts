@@ -241,7 +241,7 @@ const initSettingButton = () => {
                 <input type="checkbox" class="form-check-input" id="sortUserOnline" ${
                   settingData.chat.sortUserOnline ? "checked" : ""
                 } />
-                เรียงในหน้าแชท UserOnline <i class="input-helper"></i></label>
+                เรียง UserOnline ในหน้าแชท <i class="input-helper"></i></label>
             </div>
         </div>
         <hr />

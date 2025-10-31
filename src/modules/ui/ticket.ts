@@ -12,7 +12,7 @@ export const initTicketModule = async () => {
 
 export const initTicketButton = () => {
   const ticketButton = $(".card-body.text-center").find("button");
-  ticketButton.removeClass("get-ticket");
+  ticketButton.off("click");
 
   if (ticketButton[0].disabled === true) {
     ticketButton.html("คุณได้รับตั๋วสุ่มกาชาไปแล้ว");
