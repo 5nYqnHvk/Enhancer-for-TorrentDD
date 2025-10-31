@@ -18,24 +18,24 @@ export const initSettingModule = async () => {
 };
 
 const initSettingButton = () => {
-  const $menu = $(".dropdown-menu").eq(1);
-  if ($menu.length) {
-    const $newItem = $("<a>", {
-      href: "#",
-      class: "dropdown-item font-weight-medium",
-      html: "<i class='fal fa-cog mx-0'></i>&nbsp;&nbsp;TDD Settings",
-      "data-toggle": "modal",
-      "data-target": "#tddSettingsModal",
-    });
+  const $logoutItem = $(".dropdown-menu a.dropdown-item").filter(function () {
+    return $(this).text().trim().includes("ออกจากระบบ");
+  });
+  const $newItem = $("<a>", {
+    href: "#",
+    class: "dropdown-item font-weight-medium",
+    html: "<i class='fal fa-cog mx-0'></i>&nbsp;&nbsp;TDD Settings",
+    "data-toggle": "modal",
+    "data-target": "#tddSettingsModal",
+  });
 
-    $newItem.on("click", async () => await updateSettings());
+  $newItem.on("click", async () => await updateSettings());
+  $newItem.insertBefore($logoutItem);
+  $("<div>", { class: "dropdown-divider" }).insertAfter($newItem);
 
-    const $divider = $("<div>", { class: "dropdown-divider" });
-    $menu.children().eq(10).after($divider, $newItem);
-
-    const selectedSound = settingData.others.notificationSound || "";
-    $("body").append(
-      $(`<div class="modal fade" id="tddSettingsModal" tabindex="-1" role="dialog">
+  const selectedSound = settingData.others.notificationSound || "";
+  $("body").append(
+    $(`<div class="modal fade" id="tddSettingsModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -278,169 +278,168 @@ const initSettingButton = () => {
     </div>
   </div>
 </div>`),
-    );
+  );
 
-    $("#playSound").on("click", () => {
-      const selectedSound = $("#notificationSound").val().toString();
-      if (selectedSound && sounds[selectedSound]) {
-        sounds[selectedSound].volume = 0.4;
-        sounds[selectedSound].play();
-      }
+  $("#playSound").on("click", () => {
+    const selectedSound = $("#notificationSound").val().toString();
+    if (selectedSound && sounds[selectedSound]) {
+      sounds[selectedSound].volume = 0.4;
+      sounds[selectedSound].play();
+    }
+  });
+
+  waitForBootstrap(() => {
+    const $importGashaBtn = $("#importGashaData");
+    const $exportGashaBtn = $("#exportGashaData");
+    const $resetGashaBtn = $("#resetGashaData");
+
+    // ปุ่มบันทึก settings
+    $(document).on("click", "#saveSettings", async function () {
+      settingData.torrent.enabledTorrentModule = $(
+        "#enabledTorrentModule",
+      ).prop("checked");
+      settingData.torrent.showDownloadButton = $("#showDownloadButton").prop(
+        "checked",
+      );
+      settingData.torrent.updatePeerslist =
+        $("#updatePeerslist").prop("checked");
+
+      settingData.farm.enabledFarmModule =
+        $("#enabledFarmModule").prop("checked");
+      settingData.farm.autoFarm = $("#autoFarm").prop("checked");
+      settingData.farm.notificationFarm =
+        $("#notificationFarm").prop("checked");
+      settingData.farm.farmUpdateInterval =
+        parseInt($("#farmUpdateInterval").val() as string) || 10;
+      settingData.farm.minPlotReadyForNotification =
+        parseInt($("#minPlotReadyForNotification").val() as string) || 1;
+
+      settingData.ticket.enabledTicketModule = $("#enabledTicketModule").prop(
+        "checked",
+      );
+      settingData.ticket.autoTicket = $("#autoTicket").prop("checked");
+      settingData.ticket.notificationTicket = $("#notificationTicket").prop(
+        "checked",
+      );
+      settingData.ticket.ticketUpdateInterval =
+        parseInt($("#ticketUpdateInterval").val() as string) || 10;
+      settingData.ticket.minTicketReadyForNotification =
+        parseInt($("#minTicketReadyForNotification").val() as string) || 1;
+
+      settingData.gasha.enabledGashaModule = $("#enabledGashaModule").prop(
+        "checked",
+      );
+      settingData.gasha.saveGashaLog = $("#saveGashaLog").prop("checked");
+      settingData.gasha.showGashaLog = $("#showGashaLog").prop("checked");
+
+      settingData.betcard.enabledBetCardModule = $(
+        "#enabledBetCardModule",
+      ).prop("checked");
+      settingData.betcard.enabledPlaceCardModule = $(
+        "#enabledPlaceCardModule",
+      ).prop("checked");
+
+      settingData.chat.enabledChatModule =
+        $("#enabledChatModule").prop("checked");
+      settingData.chat.sortUserOnline = $("#sortUserOnline").prop("checked");
+
+      settingData.others.notificationSound = $(
+        "#notificationSound",
+      ).val() as string;
+
+      GM_setValue("settings", settingData);
+      await swal.fire(
+        "บันทึกข้อมูลสำเร็จ!",
+        "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
+        "success",
+      );
+      $("#tddSettingsModal").modal("hide");
     });
 
-    waitForBootstrap(() => {
-      const $importGashaBtn = $("#importGashaData");
-      const $exportGashaBtn = $("#exportGashaData");
-      const $resetGashaBtn = $("#resetGashaData");
+    $importGashaBtn.on("click", async () => {
+      const $input = $(
+        '<input type="file" accept=".txt" style="display:none">',
+      );
+      $("body").append($input);
 
-      // ปุ่มบันทึก settings
-      $(document).on("click", "#saveSettings", async function () {
-        settingData.torrent.enabledTorrentModule = $(
-          "#enabledTorrentModule",
-        ).prop("checked");
-        settingData.torrent.showDownloadButton = $("#showDownloadButton").prop(
-          "checked",
-        );
-        settingData.torrent.updatePeerslist =
-          $("#updatePeerslist").prop("checked");
+      $input.on("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-        settingData.farm.enabledFarmModule =
-          $("#enabledFarmModule").prop("checked");
-        settingData.farm.autoFarm = $("#autoFarm").prop("checked");
-        settingData.farm.notificationFarm =
-          $("#notificationFarm").prop("checked");
-        settingData.farm.farmUpdateInterval =
-          parseInt($("#farmUpdateInterval").val() as string) || 10;
-        settingData.farm.minPlotReadyForNotification =
-          parseInt($("#minPlotReadyForNotification").val() as string) || 1;
-
-        settingData.ticket.enabledTicketModule = $("#enabledTicketModule").prop(
-          "checked",
-        );
-        settingData.ticket.autoTicket = $("#autoTicket").prop("checked");
-        settingData.ticket.notificationTicket = $("#notificationTicket").prop(
-          "checked",
-        );
-        settingData.ticket.ticketUpdateInterval =
-          parseInt($("#ticketUpdateInterval").val() as string) || 10;
-        settingData.ticket.minTicketReadyForNotification =
-          parseInt($("#minTicketReadyForNotification").val() as string) || 1;
-
-        settingData.gasha.enabledGashaModule = $("#enabledGashaModule").prop(
-          "checked",
-        );
-        settingData.gasha.saveGashaLog = $("#saveGashaLog").prop("checked");
-        settingData.gasha.showGashaLog = $("#showGashaLog").prop("checked");
-
-        settingData.betcard.enabledBetCardModule = $(
-          "#enabledBetCardModule",
-        ).prop("checked");
-        settingData.betcard.enabledPlaceCardModule = $(
-          "#enabledPlaceCardModule",
-        ).prop("checked");
-
-        settingData.chat.enabledChatModule =
-          $("#enabledChatModule").prop("checked");
-        settingData.chat.sortUserOnline = $("#sortUserOnline").prop("checked");
-
-        settingData.others.notificationSound = $(
-          "#notificationSound",
-        ).val() as string;
-
-        GM_setValue("settings", settingData);
-        await swal.fire(
-          "บันทึกข้อมูลสำเร็จ!",
-          "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
-          "success",
-        );
-        $("#tddSettingsModal").modal("hide");
-      });
-
-      $importGashaBtn.on("click", async () => {
-        const $input = $(
-          '<input type="file" accept=".txt" style="display:none">',
-        );
-        $("body").append($input);
-
-        $input.on("change", async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          const text = await file.text(); // อ่านเนื้อหาไฟล์
-          await swal
-            .fire({
-              title: "คุณต้องการนำเข้าข้อมูลกาชาหรือไม่!",
-              text: "ถ้าคุณมีข้อมูลกาชาอยู่แล้วต้องการนำเข้าข้อมูลที่คุณนำเข้าอาจเขียนทับข้อมูลเก่าได้",
-              icon: "question",
-              showCancelButton: true,
-              confirmButtonText: "นำเข้า",
-              cancelButtonText: "ยกเลิก",
-              confirmButtonColor: "#FF0000",
-            })
-            .then(async (result) => {
-              $("#tddSettingsModal").modal("hide");
-              if (result.isConfirmed) {
-                try {
-                  const data = JSON.parse(text);
-                  GM_setValue("gashaData", data);
-                  await swal.fire(
-                    "นำเข้าข้อมูลสำเร็จ!",
-                    "นำเข้าข้อมูลกาชาสำเร็จ!",
-                    "success",
-                  );
-                } catch (err) {
-                  await swal.fire(
-                    "นำเข้าข้อมูลไม่สำเร็จ!",
-                    "ไฟล์ไม่ถูกต้องหรือไม่ใช่ JSON ที่ถูกต้อง",
-                    "error",
-                  );
-                  console.error(err);
-                }
-              }
-            });
-
-          $input.remove();
-        });
-
-        $input[0].click();
-      });
-
-      $exportGashaBtn.on("click", async () => {
-        const gashaData = JSON.stringify(GM_getValue("gashaData", []));
-        const blob = new Blob([gashaData], { type: "text/plain" });
-        const $a = $(
-          `<a href="${URL.createObjectURL(blob)}" download="gasha.txt" style="display:none"></a>`,
-        );
-        $("body").append($a);
-        $a[0].click();
-        $a.remove();
-      });
-
-      $resetGashaBtn.on("click", async () => {
+        const text = await file.text(); // อ่านเนื้อหาไฟล์
         await swal
           .fire({
-            title: "คุณต้องการลบข้อมูลกาชาหรือไม่!",
-            text: "ถ้าลบแล้วจะไม่สามารถกู้ข้อมูลคืนได้",
+            title: "คุณต้องการนำเข้าข้อมูลกาชาหรือไม่!",
+            text: "ถ้าคุณมีข้อมูลกาชาอยู่แล้วต้องการนำเข้าข้อมูลที่คุณนำเข้าอาจเขียนทับข้อมูลเก่าได้",
             icon: "question",
             showCancelButton: true,
-            confirmButtonText: "ลบ",
+            confirmButtonText: "นำเข้า",
             cancelButtonText: "ยกเลิก",
             confirmButtonColor: "#FF0000",
           })
           .then(async (result) => {
             $("#tddSettingsModal").modal("hide");
             if (result.isConfirmed) {
-              GM_setValue("gashaData", []);
-              await swal.fire(
-                "ลบข้อมูลสำเร็จ!",
-                "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
-                "success",
-              );
+              try {
+                const data = JSON.parse(text);
+                GM_setValue("gashaData", data);
+                await swal.fire(
+                  "นำเข้าข้อมูลสำเร็จ!",
+                  "นำเข้าข้อมูลกาชาสำเร็จ!",
+                  "success",
+                );
+              } catch (err) {
+                await swal.fire(
+                  "นำเข้าข้อมูลไม่สำเร็จ!",
+                  "ไฟล์ไม่ถูกต้องหรือไม่ใช่ JSON ที่ถูกต้อง",
+                  "error",
+                );
+                console.error(err);
+              }
             }
           });
+
+        $input.remove();
       });
+
+      $input[0].click();
     });
-  }
+
+    $exportGashaBtn.on("click", async () => {
+      const gashaData = JSON.stringify(GM_getValue("gashaData", []));
+      const blob = new Blob([gashaData], { type: "text/plain" });
+      const $a = $(
+        `<a href="${URL.createObjectURL(blob)}" download="gasha.txt" style="display:none"></a>`,
+      );
+      $("body").append($a);
+      $a[0].click();
+      $a.remove();
+    });
+
+    $resetGashaBtn.on("click", async () => {
+      await swal
+        .fire({
+          title: "คุณต้องการลบข้อมูลกาชาหรือไม่!",
+          text: "ถ้าลบแล้วจะไม่สามารถกู้ข้อมูลคืนได้",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "ลบ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#FF0000",
+        })
+        .then(async (result) => {
+          $("#tddSettingsModal").modal("hide");
+          if (result.isConfirmed) {
+            GM_setValue("gashaData", []);
+            await swal.fire(
+              "ลบข้อมูลสำเร็จ!",
+              "รีเฟรชหน้าเว็บเพื่อใช้ Settings ใหม่ที่บันทึกไว้",
+              "success",
+            );
+          }
+        });
+    });
+  });
 };
 
 const updateSettings = async () => {
