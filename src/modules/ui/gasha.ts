@@ -21,7 +21,7 @@ export const initGashaModule = async () => {
       if (!res.ok) throw new Error("Failed to fetch case data");
       const data = await res.json();
       if (data.success) {
-        if (data.status) {
+        if (data.data.status) {
           logger.info(`คุณหมุนการชาได้รับ ${data.data.final_item.name}!`);
           const gashaData = {
             type: BOX_NAME as GashaData["type"],
