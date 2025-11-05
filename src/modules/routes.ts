@@ -16,7 +16,7 @@ export const initRoutes = async () => {
     },
     {
       name: "Gasha",
-      match: /^\/(gashapon|ticket-gashapon1|ticket-gashapon2)\.php$/,
+      match: /^\/gashapon\.php(?:\?box_name=.*)?$/,
       init: async () => initGashaModule(),
     },
     {

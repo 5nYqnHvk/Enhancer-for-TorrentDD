@@ -88,7 +88,13 @@ export interface UserInfo {
 }
 
 export interface GashaData {
-  type: "C" | "G1" | "G2";
+  type:
+    | "pet_box_1"
+    | "pet_box_2"
+    | "pet_box_3"
+    | "pet_box_4"
+    | "ticket_pet_box_1"
+    | "unknown";
   img: string;
   txt: string;
   date: number;
