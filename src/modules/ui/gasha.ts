@@ -74,8 +74,13 @@ const initGashaLog = async () => {
 
   const tbody = $("table").find("tbody")[0];
 
+  const type = getGashaType();
+
   gashaHistoryData = (await getGashaData())
-    .filter((data) => data.type === getGashaType())
+    .filter((data) => {
+      if (!type || type === "unknown") return true;
+      return data.type === type;
+    })
     .sort((a, b) => b.date - a.date);
 
   let id = gashaHistoryData.length + 1;
@@ -157,6 +162,8 @@ const getGashaType = () => {
   let boxName: GashaData["type"];
   if (getLocation().search.split("=")[0] === "?box_name") {
     boxName = getLocation().search.slice(10) as GashaData["type"];
+  } else {
+    boxName = "unknown";
   }
   return boxName;
 };
