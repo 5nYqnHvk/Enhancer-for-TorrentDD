@@ -25,6 +25,7 @@ export const initGashaModule = async () => {
           logger.info(`คุณหมุนการชาได้รับ ${data.data.final_item.name}!`);
           const gashaData = {
             type: BOX_NAME as GashaData["type"],
+            cls: data.data.final_item.class,
             txt: data.data.final_item.name,
             img: data.data.final_item.img,
           };
@@ -97,7 +98,11 @@ const initGashaLog = async () => {
     const td3 = tr.insertCell();
     td3.width = "150";
     const td_img = document.createElement("img");
-    td_img.src = "https://www.torrentdd.com/images/pets/" + data.img;
+    if (data.cls) {
+      td_img.src = `https://www.torrentdd.com/images/${data.cls === "icon" ? "icons" : "pets"}/${data.img}`;
+    } else {
+      td_img.src = `https://www.torrentdd.com/images/pets/${data.img}`;
+    }
     td3.appendChild(td_img);
     const td4 = tr.insertCell();
     const td_date = document.createTextNode(
@@ -145,6 +150,7 @@ const getGashaData = async (): Promise<GashaData[]> => {
 const saveGashaData = async (gashaData: any) => {
   const newData: GashaData = {
     type: getGashaType(),
+    cls: gashaData.cls,
     img: gashaData.img,
     txt: gashaData.txt,
     date: Date.now(),

@@ -95,6 +95,7 @@ export interface GashaData {
     | "pet_box_4"
     | "ticket_pet_box_1"
     | "unknown";
+  cls: "A" | "B" | "S" | "SS" | "zen" | "coin" | "icon" | "no";
   img: string;
   txt: string;
   date: number;
