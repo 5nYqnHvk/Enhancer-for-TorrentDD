@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { createLogger } from "../../utils/logger";
 import { fetctSettingData } from "../data/fetchData";
 
@@ -18,6 +19,69 @@ interface UserMessage {
 export const initChatModule = () => {
   if (!settingData.chat.enabledChatModule) return;
   sortUserOnline();
+
+  // fix upload link
+  unsafeWindow.uploadFile = () => {
+        let apifile = $('#hidden-input')[0];
+        let type: string;
+        if (apifile.files.length > 0) {
+
+            const fileType = apifile.files[0].type;
+
+            if (fileType === 'image/jpeg') {
+                type = 'jpg';
+            } else if (fileType === 'image/png') {
+                type = 'png';
+            } else if (fileType === 'image/gif') {
+                type = 'gif';
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "รองรับเฉพาะ jpg, gif, png เท่านั้น!",
+                    icon: "error"
+                });
+                return;
+            }
+
+            var formData = new FormData();
+            var boundary = '---------------------------' + Date.now().toString(16);
+            formData.append('uploads', apifile.files[0], apifile.files[0].name.toLowerCase());
+            formData.set('Content-Type', 'multipart/form-data; boundary=' + boundary);
+
+            $.ajax({
+                type: 'POST',
+                url: atob('aHR0cHM6Ly81bnkuc2l0ZS91cGxvYWQ='),
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    $('#chat-input').val('กำลังอัพโหลด..').prop('disabled', true);
+                },
+                success: function(response) {
+                    const data = JSON.parse(response);
+                    if (data.type === 'success') {
+                        const url = `${atob('aHR0cHM6Ly93d3cuaS1waWMuaW5mby9pLw==')}${data.data.id}.${type}`;
+                        $('#chat-input').val(url).prop('disabled', false);
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: data.errors,
+                            icon: "error"
+                        });
+						$('#chat-input').val('').prop('disabled', false);
+					}
+                },
+                error: function() {
+                    $('#chat-input').val('').prop('disabled', false);
+                    Swal.fire({
+                        title: "Error!",
+                        text: "ต้องเป็นไฟล์รูปภาพเท่านั้น!",
+                        icon: "error"
+                    });
+                }
+            });
+        }
+    }
 };
 
 const sortUserOnline = () => {
