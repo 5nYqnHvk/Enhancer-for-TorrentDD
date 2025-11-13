@@ -30,7 +30,7 @@ import toastr from "toastr";
   logger.info(`------------------------------------`);
 
   const version = GM_info.script.version;
-  fetch("https://5nyqnhvk.xyz/checkUpdate.php")
+  fetch(`https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js?r=${Date.now()}`)
     .then(async (res) => await res.text())
     .then((txt) => {
       const versionMtch = txt.match(/\/\/ @version\s+(\d+\.\d+\.\d+)/);
