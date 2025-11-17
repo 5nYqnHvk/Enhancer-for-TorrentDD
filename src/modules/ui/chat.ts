@@ -103,8 +103,11 @@ const bossIframe = () => {
   });
 
   unsafeWindow.checkBossStatus = () => {
-      if (!isBossAlive()) {
+      const alive = isBossAlive();
+      if (alive === null) return;
+      if (!alive) {
           clearInterval(unsafeWindow.bossInterval);
+          clearInterval(unsafeWindow.attackInterval);
           $(".chat-video iframe").attr("src", '');
           $(".chat-container").removeClass("mini")
           setTimeout(() => $(".chat-container").removeClass("mini"), 1000);
@@ -115,7 +118,7 @@ const bossIframe = () => {
       const iframe = $("iframe")[0];
 
       if (!iframe || !iframe.contentDocument) {
-          return true;
+          return null;
       }
 
       const hpText = $(iframe).contents().find("#hp-text").text();
@@ -130,7 +133,7 @@ const bossIframe = () => {
       let body = $(iframe).contents().find("body");
       body.scrollTop(body[0].scrollHeight);
       if (!hpText || !hpText.includes("/")) {
-          return true;
+          return null;
       }
 
       const [currentBossHP, maxBossHP] = hpText
@@ -138,7 +141,17 @@ const bossIframe = () => {
           .map(v => parseInt(v.trim(), 10));
       return currentBossHP > 0;
   };
+
+   unsafeWindow.attackBoss = () => {
+      const iframe = $("iframe")[0];
+      if (!iframe || !iframe.contentDocument) return
+      const attackBtn = $(iframe).contents().find("#attackBtn");
+      if (!attackBtn.prop("disabled")) {
+        attackBtn.click();
+      }
+  }
 }
+
 const sortUserOnline = () => {
   if (!settingData.chat.sortUserOnline) return;
   socket.off("useronline");
