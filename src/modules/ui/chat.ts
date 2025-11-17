@@ -95,8 +95,18 @@ const bossIframe = () => {
           const iframe = $(".chat-video iframe");
           iframe.attr("src", "/boss.php");
           iframe.on("load", () => {
-              $(".chat-container").addClass("mini");
-              unsafeWindow.bossInterval = setInterval(() => checkBossStatus(), 1000);
+            $(".chat-container").addClass("mini");
+            // remove unused div
+            $(iframe).contents().find(".alert").remove()
+            $(iframe).contents().find(".mb-2").remove()
+            $(iframe).contents().find(".navbar-toggler.navbar-toggler.align-self-center").click()
+            $(iframe).contents().find(".navbar.col-lg-12.col-12.p-0.fixed-top.d-flex.flex-row").remove()
+            $(iframe).contents().find("#sidebar").remove()
+            $(iframe).contents().find("footer").remove()
+            let body = $(iframe).contents().find("body");
+            body.scrollTop(body[0].scrollHeight);
+            unsafeWindow.bossInterval = setInterval(() => checkBossStatus(), 5000);
+            unsafeWindow.attackInterval = setInterval(() => attackBoss(), 1000);
           });
       }
     }
@@ -123,15 +133,6 @@ const bossIframe = () => {
 
       const hpText = $(iframe).contents().find("#hp-text").text();
 
-      // remove unused div
-      $(iframe).contents().find(".alert").remove()
-      $(iframe).contents().find(".mb-2").remove()
-      $(iframe).contents().find(".navbar-toggler.navbar-toggler.align-self-center").click()
-      $(iframe).contents().find(".navbar.col-lg-12.col-12.p-0.fixed-top.d-flex.flex-row").remove()
-      $(iframe).contents().find("#sidebar").remove()
-      $(iframe).contents().find("footer").remove()
-      let body = $(iframe).contents().find("body");
-      body.scrollTop(body[0].scrollHeight);
       if (!hpText || !hpText.includes("/")) {
           return null;
       }
@@ -141,14 +142,29 @@ const bossIframe = () => {
           .map(v => parseInt(v.trim(), 10));
       return currentBossHP > 0;
   };
+   unsafeWindow.autoAttackBoss = false;
+   let lastState = unsafeWindow.autoAttackBoss;
 
+  setInterval(() => {
+    if (unsafeWindow.autoAttackBoss !== lastState) {
+      lastState = unsafeWindow.autoAttackBoss;
+
+      if (lastState === true) {
+        logger.info(atob("QXV0b0F0dGFja0Jvc3M6IE9OIDop"));
+      }
+    }
+  }, 200);
+  
    unsafeWindow.attackBoss = () => {
+    if (unsafeWindow.autoAttackBoss) {
       const iframe = $("iframe")[0];
       if (!iframe || !iframe.contentDocument) return
       const attackBtn = $(iframe).contents().find("#attackBtn");
-      if (!attackBtn.prop("disabled")) {
+      if (attackBtn.is(":enabled") && attackBtn.is(":visible")) {
+        console.log("Attack")
         attackBtn.click();
       }
+    }
   }
 }
 
