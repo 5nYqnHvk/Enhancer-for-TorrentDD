@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      2.3.8
+// @version      2.3.9
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -13,7 +13,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.3.8
+// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.3.9
 // @downloadURL  https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @updateURL    https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
@@ -59,4 +59,6 @@ Changelog
 - เพิ่มอัปเดทปุ่มรับ ticket ทำให้ไม่ต้องรีเฟรชหน้าใหม่
 2.3.8
 - แก้ปุ่มอัปโหลดรูปหน้าแชทให้ใช้ได้ปกติ
+2.3.9
+- เพิ่มฟีเจอร์แสดง iframe หน้าบอสทำให้ไม่ต้องเข้าไปหน้าบอสตอนตี (ต้องไปเปิดเองหน้า settings)
 */

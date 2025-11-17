@@ -225,6 +225,7 @@ const defaultSettingData: Settings = {
   },
   chat: {
     enabledChatModule: true,
+    enabledIframeBoss: false,
     sortUserOnline: true,
   },
   others: {

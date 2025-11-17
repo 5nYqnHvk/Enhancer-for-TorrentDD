@@ -237,6 +237,15 @@ const initSettingButton = () => {
         </div>
         <div class="form-group">
             <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledIframeBoss">
+                <input type="checkbox" class="form-check-input" id="enabledIframeBoss" ${
+                  settingData.chat.enabledIframeBoss ? "checked" : ""
+                } />
+                เปิดใช้งาน iframe boss เมื่อถึงเวลาตีบอส <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
             <label class="form-check-label" for="sortUserOnline">
                 <input type="checkbox" class="form-check-input" id="sortUserOnline" ${
                   settingData.chat.sortUserOnline ? "checked" : ""
@@ -341,8 +350,9 @@ const initSettingButton = () => {
 
       settingData.chat.enabledChatModule =
         $("#enabledChatModule").prop("checked");
+      settingData.chat.enabledIframeBoss = $("#enabledIframeBoss").prop("checked");
       settingData.chat.sortUserOnline = $("#sortUserOnline").prop("checked");
-
+      
       settingData.others.notificationSound = $(
         "#notificationSound",
       ).val() as string;
@@ -494,6 +504,7 @@ const updateSettings = async () => {
   );
 
   $("#enabledChatModule").prop("checked", settingData.chat.enabledChatModule);
+  $("#enabledIframeBoss").prop("checked", settingData.chat.enabledIframeBoss);
   $("#sortUserOnline").prop("checked", settingData.chat.sortUserOnline);
 
   $("#notificationSound").val(settingData.others.notificationSound);

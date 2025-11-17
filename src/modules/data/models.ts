@@ -64,6 +64,7 @@ export interface BetCardSettings {
 
 export interface ChatSettings {
   enabledChatModule: boolean;
+  enabledIframeBoss: boolean;
   sortUserOnline: boolean;
 }
 

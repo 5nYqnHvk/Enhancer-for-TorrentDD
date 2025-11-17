@@ -82,8 +82,63 @@ export const initChatModule = () => {
             });
         }
     }
+
+    if (!settingData.chat.enabledIframeBoss) return;
+    bossIframe();
+
 };
 
+const bossIframe = () => {
+  socket.on("chat", (chat: any) => {
+    if (chat.us_id === 0 && chat.us_class === 0 && chat.us_icon === 100) {
+      if (chat.message.includes("Monster บุกเว็บ ต้องการผู้กล้าด่วน!! [url=https://www.torrentdd.com/boss.php](เข้าร่วม!)[/url]")) {
+          const iframe = $(".chat-video iframe");
+          iframe.attr("src", "/boss.php");
+          iframe.on("load", () => {
+              $(".chat-container").addClass("mini");
+              unsafeWindow.bossInterval = setInterval(() => checkBossStatus(), 1000);
+          });
+      }
+    }
+  });
+
+  unsafeWindow.checkBossStatus = () => {
+      if (!isBossAlive()) {
+          clearInterval(unsafeWindow.bossInterval);
+          $(".chat-video iframe").attr("src", '');
+          $(".chat-container").removeClass("mini")
+          setTimeout(() => $(".chat-container").removeClass("mini"), 1000);
+      }
+  };
+
+  unsafeWindow.isBossAlive = () => {
+      const iframe = $("iframe")[0];
+
+      if (!iframe || !iframe.contentDocument) {
+          return true;
+      }
+
+      const hpText = $(iframe).contents().find("#hp-text").text();
+
+      // remove unused div
+      $(iframe).contents().find(".alert").remove()
+      $(iframe).contents().find(".mb-2").remove()
+      $(iframe).contents().find(".navbar-toggler.navbar-toggler.align-self-center").click()
+      $(iframe).contents().find(".navbar.col-lg-12.col-12.p-0.fixed-top.d-flex.flex-row").remove()
+      $(iframe).contents().find("#sidebar").remove()
+      $(iframe).contents().find("footer").remove()
+      let body = $(iframe).contents().find("body");
+      body.scrollTop(body[0].scrollHeight);
+      if (!hpText || !hpText.includes("/")) {
+          return true;
+      }
+
+      const [currentBossHP, maxBossHP] = hpText
+          .split(" / ")
+          .map(v => parseInt(v.trim(), 10));
+      return currentBossHP > 0;
+  };
+}
 const sortUserOnline = () => {
   if (!settingData.chat.sortUserOnline) return;
   socket.off("useronline");
