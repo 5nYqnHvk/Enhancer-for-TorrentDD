@@ -60,12 +60,24 @@ export interface TicketSettings {
 export interface BetCardSettings {
   enabledBetCardModule: boolean;
   enabledPlaceCardModule: boolean;
+  enabledBoardStats: boolean;
+  enabledCardRealtime: boolean;
+}
+
+export interface EbetSettings {
+  enabledEbetModule: boolean;
+  enabledHoverDetails: boolean;
+}
+
+export interface BankSettings {
+  enabledBankModule: boolean;
 }
 
 export interface ChatSettings {
   enabledChatModule: boolean;
   enabledIframeBoss: boolean;
   sortUserOnline: boolean;
+  enabledImagePreview: boolean;
 }
 
 export interface OtherSettings {
@@ -78,6 +90,8 @@ export interface Settings {
   gasha: GashaSettings;
   ticket: TicketSettings;
   betcard: BetCardSettings;
+  ebet: EbetSettings;
+  bank: BankSettings;
   chat: ChatSettings;
   others: OtherSettings;
 }

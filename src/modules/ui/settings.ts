@@ -222,6 +222,59 @@ const initSettingButton = () => {
                 เปิดใช้งานระบบค้นหาไพ่ <i class="input-helper"></i></label>
             </div>
         </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledBoardStats">
+                <input type="checkbox" class="form-check-input" id="enabledBoardStats" ${
+                  settingData.betcard.enabledBoardStats ? "checked" : ""
+                } />
+                แสดงสถิติ Battle Card / winrate <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledCardRealtime">
+                <input type="checkbox" class="form-check-input" id="enabledCardRealtime" ${
+                  settingData.betcard.enabledCardRealtime ? "checked" : ""
+                } />
+                อัปเดตรายการไพ่แบบ realtime <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
+        <!-- grp ebet -->
+        <h6 class="text-primary mb-2">ระบบโต๊ะบอล</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledEbetModule">
+                <input type="checkbox" class="form-check-input" id="enabledEbetModule" ${
+                  settingData.ebet.enabledEbetModule ? "checked" : ""
+                } />
+                เปิดใช้งานระบบโต๊ะบอล QoL <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledHoverDetails">
+                <input type="checkbox" class="form-check-input" id="enabledHoverDetails" ${
+                  settingData.ebet.enabledHoverDetails ? "checked" : ""
+                } />
+                แสดงรายชื่อคนลงเดิมพันตอน hover <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
+        <!-- grp bank -->
+        <h6 class="text-primary mb-2">ระบบ Bank</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledBankModule">
+                <input type="checkbox" class="form-check-input" id="enabledBankModule" ${
+                  settingData.bank.enabledBankModule ? "checked" : ""
+                } />
+                เปิดใช้งาน bulk exchange หน้า Bank <i class="input-helper"></i></label>
+            </div>
+        </div>
         <hr />
 
         <!-- grp chat -->
@@ -251,6 +304,15 @@ const initSettingButton = () => {
                   settingData.chat.sortUserOnline ? "checked" : ""
                 } />
                 เรียง UserOnline ในหน้าแชท <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledImagePreview">
+                <input type="checkbox" class="form-check-input" id="enabledImagePreview" ${
+                  settingData.chat.enabledImagePreview ? "checked" : ""
+                } />
+                แสดง skeleton preview รูปในแชท <i class="input-helper"></i></label>
             </div>
         </div>
         <hr />
@@ -347,11 +409,19 @@ const initSettingButton = () => {
       settingData.betcard.enabledPlaceCardModule = $(
         "#enabledPlaceCardModule",
       ).prop("checked");
+      settingData.betcard.enabledBoardStats = $("#enabledBoardStats").prop("checked");
+      settingData.betcard.enabledCardRealtime = $("#enabledCardRealtime").prop("checked");
+
+      settingData.ebet.enabledEbetModule = $("#enabledEbetModule").prop("checked");
+      settingData.ebet.enabledHoverDetails = $("#enabledHoverDetails").prop("checked");
+
+      settingData.bank.enabledBankModule = $("#enabledBankModule").prop("checked");
 
       settingData.chat.enabledChatModule =
         $("#enabledChatModule").prop("checked");
       settingData.chat.enabledIframeBoss = $("#enabledIframeBoss").prop("checked");
       settingData.chat.sortUserOnline = $("#sortUserOnline").prop("checked");
+      settingData.chat.enabledImagePreview = $("#enabledImagePreview").prop("checked");
       
       settingData.others.notificationSound = $(
         "#notificationSound",
@@ -404,7 +474,7 @@ const initSettingButton = () => {
                   "ไฟล์ไม่ถูกต้องหรือไม่ใช่ JSON ที่ถูกต้อง",
                   "error",
                 );
-                console.error(err);
+                logger.error("นำเข้าข้อมูลกาชาไม่สำเร็จ", err);
               }
             }
           });
@@ -502,10 +572,18 @@ const updateSettings = async () => {
     "checked",
     settingData.betcard.enabledPlaceCardModule,
   );
+  $("#enabledBoardStats").prop("checked", settingData.betcard.enabledBoardStats);
+  $("#enabledCardRealtime").prop("checked", settingData.betcard.enabledCardRealtime);
+
+  $("#enabledEbetModule").prop("checked", settingData.ebet.enabledEbetModule);
+  $("#enabledHoverDetails").prop("checked", settingData.ebet.enabledHoverDetails);
+
+  $("#enabledBankModule").prop("checked", settingData.bank.enabledBankModule);
 
   $("#enabledChatModule").prop("checked", settingData.chat.enabledChatModule);
   $("#enabledIframeBoss").prop("checked", settingData.chat.enabledIframeBoss);
   $("#sortUserOnline").prop("checked", settingData.chat.sortUserOnline);
+  $("#enabledImagePreview").prop("checked", settingData.chat.enabledImagePreview);
 
   $("#notificationSound").val(settingData.others.notificationSound);
 };

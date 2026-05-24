@@ -10,8 +10,7 @@ const settingData = await fetctSettingData();
 let gashaHistoryData: GashaData[] = [];
 export const initGashaModule = async () => {
   if (!settingData.gasha.enabledGashaModule) return;
-  if (!settingData.gasha.showGashaLog) return;
-  initGashaLog();
+  if (settingData.gasha.showGashaLog) await initGashaLog();
 
   unsafeWindow.fetchCaseData = async (action = false) => {
     try {
@@ -21,24 +20,31 @@ export const initGashaModule = async () => {
       if (!res.ok) throw new Error("Failed to fetch case data");
       const data = await res.json();
       if (data.success) {
+        const itemName = data.data.final_item.name;
         if (data.data.status) {
-          logger.info(`คุณหมุนการชาได้รับ ${data.data.final_item.name}!`);
-          const gashaData = {
-            type: BOX_NAME as GashaData["type"],
-            cls: data.data.final_item.class,
-            txt: data.data.final_item.name,
-            img: data.data.final_item.img,
-          };
-          saveGashaData(gashaData);
+          logger.info(`คุณหมุนกาชาได้รับ ${itemName}!`);
+          toastr.success(itemName, "คุณหมุนกาชาได้รับ");
+          if (settingData.gasha.saveGashaLog) {
+            saveGashaData({
+              type: BOX_NAME as GashaData["type"],
+              cls: data.data.final_item.class,
+              txt: itemName,
+              img: data.data.final_item.img,
+            });
+            if (settingData.gasha.showGashaLog) await renderGashaLog();
+          }
         } else {
-          logger.info(`คุณทดสอบหมุนกาชาได้รับ ${data.data.final_item.name}!`);
+          logger.debug(`คุณทดสอบหมุนกาชาได้รับ ${itemName}!`);
+          toastr.info(itemName, "Demo Gashapon");
         }
       } else {
-        logger.error(data.error);
+        logger.warn("Gashapon API rejected request", data.error);
+        toastr.error(data.error, "Gashapon");
       }
       return data;
     } catch (err) {
-      console.error(err);
+      logger.error("โหลดข้อมูลกาชาไม่สำเร็จ", err);
+      toastr.error("โหลดข้อมูลไม่สำเร็จ", "Gashapon");
       resultArea.textContent = "โหลดข้อมูลไม่สำเร็จ";
       btnOpen.disabled = false;
       btnOpenDemo.disabled = false;
@@ -49,7 +55,7 @@ export const initGashaModule = async () => {
 
 const initGashaLog = async () => {
   $(".mb-3").first().after(`
-        <div class="card mt-3"><div class="card-body">
+        <div id="enhancerGashaLog" class="card mt-3"><div class="card-body">
             <h5>ประวัติการสุ่มกาชา</h5>
             <h5 class="mb-2 text-youtube">*ตารางข้างล่างนี้สร้างโดย Enhancer for TorrentDD</h5>
             <div class="row table-responsive">
@@ -64,16 +70,19 @@ const initGashaLog = async () => {
                                 <th scope="col">ลบ</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        <!-- Insert gashaData here -->
-                        </tbody>
+                        <tbody id="enhancerGashaLogBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
         `);
+  await renderGashaLog();
+};
 
-  const tbody = $("table").find("tbody")[0];
+const renderGashaLog = async () => {
+  const tbody = $("#enhancerGashaLogBody")[0] as HTMLTableSectionElement;
+  if (!tbody) return;
+  $(tbody).empty();
 
   const type = getGashaType();
 
@@ -127,14 +136,14 @@ const initGashaLog = async () => {
         .then(async (result) => {
           $("#tddSettingsModal").modal("hide");
           if (result.isConfirmed) {
-            gashaHistoryData.splice(id - 1, 1);
             const allData: GashaData[] = GM_getValue<GashaData[]>(
               "gashaData",
               [],
             );
             const updatedData = allData.filter((d) => d.date !== data.date);
             GM_setValue("gashaData", updatedData);
-            tr.remove();
+            toastr.success(data.txt, "ลบประวัติแล้ว");
+            await renderGashaLog();
           }
         });
     };
