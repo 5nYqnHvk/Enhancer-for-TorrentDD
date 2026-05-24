@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enhancer for TorrentDD
-// @version      2.3.10
+// @version      2.4.0
 // @description  เพิ่มฟังก์ชั้นที่ทำให้ใช้เว็บได้ง่ายขึ้น
 // @author       5nYqnHvk
 // @match        https://www.torrentdd.com/*
@@ -13,7 +13,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_notification
-// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.3.10
+// @require      https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/dist/index.user.js?version=2.4.0
 // @downloadURL  https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @updateURL    https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js
 // @connect      5nYqnHvk.xyz
@@ -61,4 +61,14 @@ Changelog
 - แก้ปุ่มอัปโหลดรูปหน้าแชทให้ใช้ได้ปกติ
 2.3.9
 - เพิ่มฟีเจอร์แสดง iframe หน้าบอสทำให้ไม่ต้องเข้าไปหน้าบอสตอนตี (ต้องไปเปิดเองหน้า settings)
+2.4.0
+- ลด request ซ้ำในหลาย module และเพิ่ม realtime refresh แบบเบาลง
+- เพิ่ม local dev loader สำหรับทดสอบผ่าน Tampermonkey
+- เพิ่ม Battle Card winrate, board analyzer, cache ผลล่าสุด และ filter ตาม player
+- เพิ่ม Battle Card / Chat / Bank / โต๊ะบอล settings toggles
+- เพิ่มโต๊ะบอล hover details ดูรายชื่อคนลงเดิมพันและยอด Zen โดยไม่ต้องเข้า detail
+- เพิ่ม Bank bulk exchange และแก้ปุ่มแลกเดิมไม่ให้ refresh หน้า
+- ปรับ Gasha log ให้ save/show แยกกันและ update ทันทีหลังเปิดกล่อง
+- เพิ่ม Chat image preview แบบ skeleton กดแล้วค่อยโหลดรูป
+- ปรับ logger ให้แยก debug/info/warn/error ถูกต้องและอ่านง่ายขึ้น
 */
