@@ -31,7 +31,8 @@ export const fetchUserData = async (): Promise<UserData> => {
       isPremium: isPremium,
     };
   } catch (err) {
-    throw logger.error("ดึงข้อมูลผู้ใช้งานไม่สำเร็จ", err);
+    logger.error("ดึงข้อมูลผู้ใช้งานไม่สำเร็จ", err);
+    throw err;
   }
 };
 
@@ -159,7 +160,8 @@ export const fetchFarmData = async (getResText: boolean): Promise<FarmData> => {
     }
     return responseData;
   } catch (err) {
-    throw logger.error("ดึงข้อมูลฟาร์มไม่สำเร็จ");
+    logger.error("ดึงข้อมูลฟาร์มไม่สำเร็จ", err);
+    throw err;
   }
 };
 
@@ -222,11 +224,21 @@ const defaultSettingData: Settings = {
   betcard: {
     enabledBetCardModule: true,
     enabledPlaceCardModule: true,
+    enabledBoardStats: true,
+    enabledCardRealtime: true,
+  },
+  ebet: {
+    enabledEbetModule: true,
+    enabledHoverDetails: true,
+  },
+  bank: {
+    enabledBankModule: true,
   },
   chat: {
     enabledChatModule: true,
     enabledIframeBoss: false,
     sortUserOnline: true,
+    enabledImagePreview: true,
   },
   others: {
     notificationSound: "noti.mp3",

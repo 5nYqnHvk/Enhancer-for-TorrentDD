@@ -25,9 +25,19 @@ const initTicketButton = async (refresh = false) => {
   }
 
   ticketButton = $(".card-body.text-center").find("button");
-  tickets = Number(root.find(".card-body.text-center").find("button").text().split(" ")[1]);
+  const ticketText = root.find(".card-body.text-center").find("button").text();
+  tickets = Number(ticketText.match(/(\d+)\s*ชิ้น/)?.[1] ?? 0);
   ticketButton.off("click");
-  logger.info(`ตั่วที่สามารถรับได้ ${tickets} ชิ้น`);
+  logger.debug(`ตั๋วที่สามารถรับได้ ${tickets} ชิ้น`, { refresh });
+
+  if (tickets <= 0) {
+    ticketButton
+      .html(`รับตั๋วสุ่มกาชา ${tickets} ชิ้น`)
+      .removeClass("btn-success")
+      .addClass("btn-danger")
+      .prop("disabled", true);
+    return;
+  }
 
   let latestRow = root
     .find("table tbody tr")
@@ -78,7 +88,7 @@ const getTicket = async () => {
       GM_setValue("ticketNotificationDate", Date.now());
       break;
     case "error-1":
-      logger.error(
+      logger.warn(
         `คุณจะต้องปล่อยไฟล์ 5 ไฟล์ขึ้นไป และ Connect มากว่า 3 ชั่วโมง`,
       );
       await Swal.fire(
@@ -89,7 +99,7 @@ const getTicket = async () => {
       ticketButton[0].disabled = true;
       break;
     case "error-2":
-      logger.error(`คุณรับตั๋วสุ่มกาชาไปแล้ว กรุณารับในรอบถัดไปค่ะ`);
+      logger.warn(`คุณรับตั๋วสุ่มกาชาไปแล้ว กรุณารับในรอบถัดไปค่ะ`);
       await Swal.fire(
         "Error!",
         "คุณรับตั๋วสุ่มกาชาไปแล้ว กรุณารับในรอบถัดไปค่ะ",
@@ -98,7 +108,7 @@ const getTicket = async () => {
       ticketButton[0].disabled = true;
       break;
     case "error-3":
-      logger.error(`การรับตั๋วสุ่มกาชา จะต้องห่างกันอย่างน้อย 3 ชั่วโมง`);
+      logger.warn(`การรับตั๋วสุ่มกาชา จะต้องห่างกันอย่างน้อย 3 ชั่วโมง`);
       await Swal.fire(
         "Error!",
         "การรับตั๋วสุ่มกาชา จะต้องห่างกันอย่างน้อย 3 ชั่วโมง",

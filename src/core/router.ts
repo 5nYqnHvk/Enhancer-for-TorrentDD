@@ -12,7 +12,7 @@ export async function routeLoader(routes: Route[]) {
   const currentPath = window.location.pathname + window.location.search;
   for (const route of routes) {
     if (route.match.test(currentPath)) {
-      logger.info(`โหลดโมดูล ${route.name}`);
+      logger.debug(`Route matched: ${route.name}`, { currentPath });
       await route.init();
     }
   }

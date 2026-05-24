@@ -21,7 +21,7 @@ let nextPlaceBetTime: Date = null;
 let placeBetIndex = 0;
 let placeBetPrice: string = null;
 
-let placeBetTimer: NodeJS.Timeout | null = null;
+let placeBetTimer: number | null = null;
 let isBetting = false;
 
 export const initPlaceCardModule = async () => {
@@ -169,7 +169,7 @@ const updateBetOrder = () => {
 const loadSetting = () => {
   const tempArr = $(betOrder).val().toString().split("\n");
   placeBetArray = filterAllowedValues(tempArr);
-  logger.info(`โหลดข้อมูลราคาที่จะวาง`, placeBetArray);
+  logger.debug(`โหลดข้อมูลราคาที่จะวาง`, placeBetArray);
 };
 
 const resetCounter = () => {
@@ -181,68 +181,57 @@ const resetCounter = () => {
 };
 
 const antiAFK = () => {
-  if (counter > 1000) {
-    stopTimer();
-  }
+  if (counter <= 1000) return false;
+  stopTimer();
+  return true;
 };
 
 const startTimer = () => {
+  if (placeBetTimer != null || isBetting) {
+    stopTimer();
+    return;
+  }
+
   loadSetting();
   $(autoBetButton).text("หยุดวางไพ่");
-  if (placeBetTimer == null) {
-    placeBetTimer = setInterval(bet, 100);
-  } else {
-    stopTimer();
-  }
+  $(statusBet).html("สถานะ: กำลังทำงาน");
+  bet();
 };
 
 const stopTimer = () => {
   resetCounter();
-  clearInterval(placeBetTimer);
+  if (placeBetTimer != null) clearTimeout(placeBetTimer);
   placeBetTimer = null;
+  isBetting = false;
   $(autoBetButton).text("เริ่มวางไพ่");
   $(statusBet).html("สถานะ: หยุดทำงาน");
 };
 
+const scheduleNextBet = () => {
+  if (placeBetTimer != null) clearTimeout(placeBetTimer);
+  const delay = Math.max(Number($(timeBet).val()) * 1000, 0);
+  nextPlaceBetTime = new Date(Date.now() + delay);
+  placeBetTimer = window.setTimeout(() => {
+    placeBetTimer = null;
+    bet();
+  }, delay);
+};
+
 const bet = async () => {
-  antiAFK();
+  if (antiAFK()) return;
   betNum = Number($(betNumE).val());
   if (counter >= betNum || placeBetArray.length === 0) return stopTimer();
-
-  const now = new Date();
-  $(statusBet).html("สถานะ: กำลังทำงาน");
-  if (isBetting || (nextPlaceBetTime && now < nextPlaceBetTime)) return;
+  if (isBetting) return;
 
   isBetting = true;
 
-  nextPlaceBetTime = new Date();
-  nextPlaceBetTime.setTime(
-    nextPlaceBetTime.getTime() + Number($(timeBet).val()) * 1000,
+  if (placeBetIndex >= placeBetArray.length) placeBetIndex = 0;
+  placeBetPrice = placeBetArray[placeBetIndex];
+  placeBetIndex++;
+
+  $(statusNextBet).html(
+    `เดิมพันครั้งต่อไป: ${placeBetIndex}/${placeBetArray.length} AT: ${placeBetPrice}`,
   );
-
-  if (placeBetIndex >= placeBetArray.length) {
-    isBetting = false;
-    placeBetIndex = 0;
-    placeBetPrice = "";
-  } else {
-    if (placeBetArray.length === 0) return;
-    placeBetPrice = placeBetArray[placeBetIndex];
-    placeBetIndex++;
-
-    if (placeBetIndex == 1) {
-      $(statusNextBet).html(
-        `เดิมพันครั้งต่อไป: 1/${placeBetArray.length} AT: ${
-          placeBetArray[placeBetIndex - 1]
-        }`,
-      );
-    } else {
-      $(statusNextBet).html(
-        `เดิมพันครั้งต่อไป: ${placeBetIndex}/${placeBetArray.length} AT: ${
-          placeBetArray[placeBetIndex - 1]
-        }`,
-      );
-    }
-  }
 
   if (placeBetPrice !== "" && typeof placeBetPrice === "string") {
     $(statusCounter).html(`Counter: ${counter}`);
@@ -254,7 +243,7 @@ const bet = async () => {
       const body = await res.text();
 
       if (body === "success") {
-        logger.info(
+        logger.debug(
           `คุณวางไพ่แล้ว ${counter + 1}/${betNum} : ${placeBetPrice} Zen`,
         );
         await toastr.success(
@@ -290,6 +279,7 @@ const bet = async () => {
           500,
         );
       } else {
+        logger.warn("วางไพ่ไม่สำเร็จ", { price: placeBetPrice, response: body });
         await toastr.error(
           "อาจเกิดจากปัญหาอินเทอร์เน็ตหรือคุณตั้งให้วางไพ่เร็วเกินไป",
           "คุณวางไม่สำเร็จ!",
@@ -319,6 +309,11 @@ const bet = async () => {
     counter++;
   }
   isBetting = false;
+  if (counter >= betNum || placeBetArray.length === 0) {
+    stopTimer();
+  } else {
+    scheduleNextBet();
+  }
 };
 
 function filterAllowedValues(arr: string[]): string[] {

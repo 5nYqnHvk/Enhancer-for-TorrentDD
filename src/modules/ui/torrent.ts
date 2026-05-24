@@ -120,7 +120,7 @@ const getDownloadUrl = async (url: string) => {
     .find(".btn.btn-inverse-success.border.border-success")
     .attr("onclick")
     .split("'")[1];
-  logger.info(`พบลิงค์ดาวน์โหลด: https://www.torrentdd.com/${downloadUrl}`);
+  logger.debug(`พบลิงค์ดาวน์โหลด: https://www.torrentdd.com/${downloadUrl}`);
   return downloadUrl;
 };
 
@@ -128,9 +128,9 @@ const download = async (url: string): Promise<void> => {
   try {
     const getUrl = await getDownloadUrl(url);
     const getFile = await fetch(getUrl);
-    logger.info(`กำลังโหลดไฟล์`);
+    logger.debug(`กำลังโหลดไฟล์`);
     if (!getFile.ok) {
-      logger.error(`ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`);
+      logger.warn(`ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`);
       toastr.error(
         `ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`,
         "ดาวน์โหลดไม่สำเร็จ!",
@@ -156,7 +156,7 @@ const download = async (url: string): Promise<void> => {
     }
     const fileUrl = `https://www.torrentdd.com/${getUrl}`;
     const $a = $(`<a href="${fileUrl}" download style="display:none"></a>`);
-    logger.info(`สร้างปุ่มดาวน์โหลดแล้ว`);
+    logger.debug(`สร้างปุ่มดาวน์โหลดแล้ว`);
     toastr.success(`คุณได้ดาวน์โหลดแล้ว`, "ดาวน์โหลดสำเร็จ!", {
       closeButton: false,
       debug: false,
@@ -178,7 +178,7 @@ const download = async (url: string): Promise<void> => {
     $a[0].click();
     $a.remove();
   } catch (err) {
-    logger.error(`ดาวน์โหลดไม่สำเร็จ ${err}`);
+    logger.error(`ดาวน์โหลดไม่สำเร็จ`, err);
   }
 };
 
@@ -186,9 +186,9 @@ const magnet = async (url: string): Promise<void> => {
   try {
     const getUrl = await getDownloadUrl(url);
     const getFile = await fetch(getUrl);
-    logger.info(`กำลังโหลดไฟล์`);
+    logger.debug(`กำลังโหลดไฟล์`);
     if (!getFile.ok) {
-      logger.error(`ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`);
+      logger.warn(`ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`);
       toastr.error(
         `ตรวจสอบไฟล์ไม่สำเร็จเนื่องจาก (${getFile.status})`,
         "Error!",
@@ -250,10 +250,10 @@ const magnet = async (url: string): Promise<void> => {
       for (const tr of meta.trackers) magnet += `&tr=${encodeURIComponent(tr)}`;
     }
 
-    logger.info(`สร้างลิงค์ Magnet แล้ว: ${magnet}`);
+    logger.info(`สร้างลิงค์ Magnet สำเร็จ`, { infoHash, name: meta.name, trackers: meta.trackers?.length ?? 0 });
 
     const $a = $(`<a href="${magnet}" style="display:none"></a>`);
-    logger.info(`สร้างปุ่มดาวน์โหลดแล้ว`);
+    logger.debug(`สร้างปุ่มดาวน์โหลดแล้ว`);
     toastr.success(`คุณได้ดาวน์โหลดแล้ว`, "ดาวน์โหลดสำเร็จ!", {
       closeButton: false,
       debug: false,
@@ -275,6 +275,6 @@ const magnet = async (url: string): Promise<void> => {
     $a[0].click();
     $a.remove();
   } catch (err) {
-    logger.error(`สร้างลิงค์ Magnet ไม่สำเร็จ ${err}`);
+    logger.error(`สร้างลิงค์ Magnet ไม่สำเร็จ`, err);
   }
 };

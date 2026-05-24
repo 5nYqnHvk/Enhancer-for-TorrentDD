@@ -73,7 +73,7 @@ const placeSeed = async (plotId: number, refresh = true) => {
       `https://www.torrentdd.com/farm.php?action=seed&ground=${plotId}`
     );
     if (place.status === 200) {
-      logger.info(`ปลูกพืชบนที่ดิน ${plotId} สำเร็จ`);
+      logger.debug(`ปลูกพืชบนที่ดิน ${plotId} สำเร็จ`);
       toastr.success(`ปลูกพืชบนที่ดิน ${plotId} สำเร็จ`, "Farm Module!", {
         closeButton: false,
         debug: false,
@@ -91,7 +91,7 @@ const placeSeed = async (plotId: number, refresh = true) => {
         hideMethod: "fadeOut",
       });
     } else {
-      logger.error(`ปลูกพืชบนที่ดิน ${plotId} ไม่สำเร็จ`);
+      logger.warn(`ปลูกพืชบนที่ดิน ${plotId} ไม่สำเร็จ`, { status: place.status });
       toastr.error(`ปลูกพืชบนที่ดิน ${plotId} ไม่สำเร็จ`, "Farm Module!", {
         closeButton: false,
         debug: false,
@@ -128,7 +128,8 @@ const placeSeed = async (plotId: number, refresh = true) => {
       showMethod: "fadeIn",
       hideMethod: "fadeOut",
     });
-    throw logger.error("ปลูกพืชไม่สำเร็จกรุณาลองใหม่อีกครั้ง");
+    logger.error("ปลูกพืชไม่สำเร็จกรุณาลองใหม่อีกครั้ง", err);
+    throw err;
   }
 };
 const placeSeedAll = async () => {
@@ -156,7 +157,7 @@ const gatherPlant = async (plotId: number, refresh = true) => {
       `https://www.torrentdd.com/farm.php?action=store&ground=${plotId}`
     );
     if (place.status === 200) {
-      logger.info(`เก็บพืชบนที่ดิน ${plotId} สำเร็จ`);
+      logger.debug(`เก็บพืชบนที่ดิน ${plotId} สำเร็จ`);
       toastr.success(`เก็บพืชบนที่ดิน ${plotId} สำเร็จ`, "Farm Module!", {
         closeButton: false,
         debug: false,
@@ -174,7 +175,7 @@ const gatherPlant = async (plotId: number, refresh = true) => {
         hideMethod: "fadeOut",
       });
     } else {
-      logger.info(`เก็บพืชบนที่ดิน ${plotId} ไม่สำเร็จ`);
+      logger.warn(`เก็บพืชบนที่ดิน ${plotId} ไม่สำเร็จ`, { status: place.status });
       toastr.error(`เก็บพืชบนที่ดิน ${plotId} ไม่สำเร็จ`, "Farm Module!", {
         closeButton: false,
         debug: false,
@@ -211,7 +212,8 @@ const gatherPlant = async (plotId: number, refresh = true) => {
       showMethod: "fadeIn",
       hideMethod: "fadeOut",
     });
-    throw logger.error("เก็บพืชไม่สำเร็จกรุณาลองใหม่อีกครั้ง");
+    logger.error("เก็บพืชไม่สำเร็จกรุณาลองใหม่อีกครั้ง", err);
+    throw err;
   }
 };
 const gatherPlantAll = async () => {
@@ -297,7 +299,8 @@ const updateFarm = async () => {
       showMethod: "fadeIn",
       hideMethod: "fadeOut",
     });
-    throw logger.error("อัปเดตฟาร์มไม่สำเร็จ");
+    logger.error("อัปเดตฟาร์มไม่สำเร็จ", err);
+    throw err;
   }
 };
 

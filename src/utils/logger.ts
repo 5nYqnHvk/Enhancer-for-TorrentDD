@@ -1,57 +1,39 @@
+type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG";
+
+const levelStyle: Record<LogLevel, string> = {
+  INFO: "color:#55FFFF;font-weight:bold;",
+  WARN: "color:#FFFF55;font-weight:bold;",
+  ERROR: "color:#FF5555;font-weight:bold;",
+  DEBUG: "color:#888888;font-weight:bold;",
+};
+
+const consoleMethod: Record<LogLevel, "info" | "warn" | "error" | "debug"> = {
+  INFO: "info",
+  WARN: "warn",
+  ERROR: "error",
+  DEBUG: "debug",
+};
+
 export const createLogger = (moduleName: string) => {
+  const log = (level: LogLevel, message: string, ...args: any[]) => {
+    console[consoleMethod[level]](
+      `%c${getDateFormat()} %c| %c${level.padEnd(5)} %c| %c${moduleName} %c-`,
+      "color:green;",
+      "color:#FFFFFF;",
+      levelStyle[level],
+      "color:#FFFFFF;",
+      "color:#00AAAA;",
+      "color:#FFFFFF;",
+      message,
+      ...args,
+    );
+  };
+
   return {
-    info: (message: string, ...args: any[]) => {
-      console.info(
-        `%c${getDateFormat()} %c| %cINFO %c| %c${moduleName} %c-`,
-        "color:green;",
-        "color:#FFFFFF;",
-        "color:#FFFFFF;",
-        "color:#FFFFFF;",
-        "color:#00AAAA;",
-        "color:#FFFFFF;",
-        message,
-        ...args
-      );
-    },
-    warn: (message: string, ...args: any[]) => {
-      console.info(
-        `%c${getDateFormat()} %c| %cINFO %c| %c${moduleName} %c-`,
-        "color:green;",
-        "color:#FFFFFF;",
-        "color:#FFFF55;",
-        "color:#FFFFFF;",
-        "color:#00AAAA;",
-        "color:#FFFFFF;",
-        message,
-        ...args
-      );
-    },
-    error: (message: string, ...args: any[]) => {
-      console.info(
-        `%c${getDateFormat()} %c| %cINFO %c| %c${moduleName} %c-`,
-        "color:green;",
-        "color:#FFFFFF;",
-        "color:#AA0000;",
-        "color:#FFFFFF;",
-        "color:#00AAAA;",
-        "color:#FFFFFF;",
-        message,
-        ...args
-      );
-    },
-    debug: (message: string, ...args: any[]) => {
-      console.info(
-        `%c${getDateFormat()} %c| %cINFO %c| %c${moduleName} %c-`,
-        "color:green;",
-        "color:#FFFFFF;",
-        "color:#555555;",
-        "color:#FFFFFF;",
-        "color:#00AAAA;",
-        "color:#FFFFFF;",
-        message,
-        ...args
-      );
-    },
+    info: (message: string, ...args: any[]) => log("INFO", message, ...args),
+    warn: (message: string, ...args: any[]) => log("WARN", message, ...args),
+    error: (message: string, ...args: any[]) => log("ERROR", message, ...args),
+    debug: (message: string, ...args: any[]) => log("DEBUG", message, ...args),
   };
 };
 
