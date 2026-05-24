@@ -24,15 +24,25 @@ interface EbetMatchData {
   myBets: EbetSideBet[];
 }
 
+interface OwnEbetCacheEntry {
+  team: string;
+  amount: number;
+  expiresAt: number;
+}
+
 let user: UserData;
 let tooltipHideTimer: number | undefined;
+const ownBetCacheKey = "enhancerEbetOwnBets";
+const ownBetCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
 const detailCache = new Map<string, Promise<EbetMatchData>>();
 
 export const initEbetModule = async () => {
   if (!settingData.ebet.enabledEbetModule) return;
   user = await fetchUserData();
-  if (!settingData.ebet.enabledHoverDetails) return;
   initEbetStyles();
+  bindEbetSubmit();
+  markCachedOwnBets();
+  if (!settingData.ebet.enabledHoverDetails) return;
   bindEbetHover();
 };
 
@@ -40,7 +50,7 @@ const initEbetStyles = () => {
   if ($("#enhancer-ebet-style").length) return;
   $("head").append(
     `<style id="enhancer-ebet-style">
-      .ebet-own-badge { margin-left: 4px; }
+      .ebet-own-badge { display: inline-block; margin: 0 4px; }
       #enhancer-ebet-tooltip { position: fixed; z-index: 99999; display: none; max-width: 560px; max-height: 380px; overflow-y: auto; padding: 10px 12px; color: #fff; background: rgba(0,0,0,.92); border-radius: 4px; box-shadow: 0 4px 14px rgba(0,0,0,.35); font-size: 12px; }
       .ebet-tooltip-row { display: flex; justify-content: space-between; gap: 16px; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,.12); }
       .ebet-tooltip-user { min-width: 190px; }
@@ -51,6 +61,69 @@ const initEbetStyles = () => {
   $("#enhancer-ebet-tooltip")
     .on("mouseenter", () => clearTooltipHideTimer())
     .on("mouseleave", () => scheduleHideTooltip());
+};
+
+const bindEbetSubmit = () => {
+  $(".bet-submit")
+    .off("click")
+    .on("click.enhancerEbet", async () => {
+      const modal = $("#betModal");
+      const button = $(".bet-submit");
+      const keyid = modal.data("enhancerKeyid")?.toString();
+      const team = modal.data("enhancerTeam")?.toString();
+      const amount = modal.find(".bet-price").val()?.toString() ?? "";
+      if (!keyid || !team || !amount) return showBetError("จำนวนเงินเดิมพัน ไม่ถูกต้อง!");
+
+      button.prop("disabled", true);
+      try {
+        const result = await submitBet(keyid, team, amount);
+        if (result !== "success") return showBetError(mapBetError(result));
+
+        cacheOwnBet(keyid, team, Number(amount));
+        markCachedOwnBets();
+        modal.modal("hide");
+        swal.fire("Good Job!", "เดิมพันเสร็จสมบูรณ์!", "success");
+      } catch (err) {
+        logger.error("วางเดิมพันโต๊ะบอลไม่สำเร็จ", err);
+        showBetError("วางเดิมพันไม่สำเร็จ");
+      } finally {
+        button.prop("disabled", false);
+      }
+    });
+
+  $(".btn-bet")
+    .off("click")
+    .on("click.enhancerEbet", function () {
+      const button = $(this);
+      const keyid = button.data("keyid")?.toString();
+      const team = button.data("team")?.toString();
+      if (!keyid || !team) return;
+
+      $("#betModal .team").html(button.find("span").html() ?? "");
+      $("#betModal").data("enhancerKeyid", keyid).data("enhancerTeam", team).modal();
+    });
+};
+
+const submitBet = async (keyid: string, team: string, amount: string) => {
+  const params = new URLSearchParams({ act: "bet", keyid, team, amount });
+  const res = await fetch(`ebet.php?${params.toString()}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return (await res.text()).trim();
+};
+
+const mapBetError = (result: string) => ({
+  "error-appove": "รายการนี้ยังไม่ถูก Appove ค่ะ",
+  "error-bet-max": "เงินเดิมพันรวม จะต้องไม่เกิน 100,000 Zen",
+  "error-class": "คุณจะต้องมี Class Rookie ขึ้นไป",
+  "error-set-bet": "จำนวนเงินเดิมพัน ไม่ถูกต้อง!",
+  "error-team-bet": "ไม่สามารถเดิมพันพร้อมกัน 2 ทีมได้",
+  "error-money": "จำนวนเงินเดิมพัน มีไม่พอ!",
+  "error-id": "ไม่พบรายการ!",
+  "error-bet-timeout": "รายการนี้หมดเวลาเดิมพันแล้ว",
+})[result] ?? result;
+
+const showBetError = (message: string) => {
+  swal.fire("Error!", message, "error");
 };
 
 const bindEbetHover = () => {
@@ -68,7 +141,8 @@ const bindEbetHover = () => {
 
       try {
         const data = await fetchMatchData(detailUrl);
-        markOwnBets(row, data);
+        syncOwnBetCacheFromMatch(row, data);
+        markCachedOwnBets(row);
         if (!button.is(":hover") && !$("#enhancer-ebet-tooltip").is(":hover")) return scheduleHideTooltip();
         showTooltip(button, renderSideTooltip(data.sides[team]));
       } catch (err) {
@@ -91,7 +165,7 @@ const fetchMatchData = (detailUrl: string) => {
       }),
     );
   }
-  return detailCache.get(detailUrl);
+  return detailCache.get(detailUrl)!;
 };
 
 const loadMatchData = async (detailUrl: string): Promise<EbetMatchData> => {
@@ -141,22 +215,61 @@ const loadMatchData = async (detailUrl: string): Promise<EbetMatchData> => {
   return { sides, myBets };
 };
 
-const markOwnBets = (row: JQuery<HTMLElement>, data: EbetMatchData) => {
-  row.find(".btn-bet").each((_index, button) => {
+const markCachedOwnBets = (scope: JQuery<HTMLElement> | Document = document) => {
+  const ownBets = getOwnBetCache();
+  $(scope).find(".ebet-own-badge").remove();
+  $(scope).find(".btn-bet").each((_index, button) => {
+    const keyid = $(button).data("keyid")?.toString();
     const team = $(button).data("team")?.toString();
-    const side = team ? data.sides[team] : undefined;
-    const ownAmount = side?.bets
-      .filter((bet) => bet.username === user.username || bet.userId === user.userId)
-      .reduce((sum, bet) => sum + bet.amount, 0) ?? 0;
+    const ownBet = keyid ? ownBets[keyid] : undefined;
+    if (!ownBet || ownBet.team !== team || ownBet.amount <= 0 || ownBet.expiresAt <= Date.now()) return;
 
-    $(button).find(".ebet-own-badge").remove();
-    if (ownAmount <= 0) return;
-
-    $(button).append(
-      `<span class="ebet-own-badge text-success" title="ลงแล้ว ${ownAmount.toLocaleString()} Zen"><i class="fal fa-check-circle"></i></span>`,
+    $(button).after(
+      `<span class="ebet-own-badge text-success" title="ลงแล้ว ${ownBet.amount.toLocaleString()} Zen"><i class="fal fa-check-circle"></i></span>`,
     );
   });
 };
+
+const syncOwnBetCacheFromMatch = (row: JQuery<HTMLElement>, data: EbetMatchData) => {
+  const keyid = row.find(".btn-bet").first().data("keyid")?.toString();
+  if (!keyid) return;
+
+  const cache = getOwnBetCache();
+  const ownBet = Object.entries(data.sides)
+    .map(([team, side]) => ({
+      team,
+      amount: side.bets
+        .filter((bet) => bet.username === user.username || bet.userId === user.userId)
+        .reduce((sum, bet) => sum + bet.amount, 0),
+    }))
+    .find((entry) => entry.amount > 0);
+
+  if (ownBet) cache[keyid] = { ...ownBet, expiresAt: Date.now() + ownBetCacheTtlMs };
+  else delete cache[keyid];
+  setOwnBetCache(cache);
+};
+
+const cacheOwnBet = (keyid: string, team: string, amount: number) => {
+  const cache = getOwnBetCache();
+  const current = cache[keyid];
+  cache[keyid] = {
+    team,
+    amount: (current?.team === team ? current.amount : 0) + amount,
+    expiresAt: Date.now() + ownBetCacheTtlMs,
+  };
+  setOwnBetCache(cache);
+};
+
+const getOwnBetCache = (): Record<string, OwnEbetCacheEntry> => {
+  const cache = GM_getValue(ownBetCacheKey, {}) as Record<string, OwnEbetCacheEntry>;
+  const now = Date.now();
+  const activeEntries = Object.entries(cache).filter(([, entry]) => entry.expiresAt > now);
+  const activeCache = Object.fromEntries(activeEntries) as Record<string, OwnEbetCacheEntry>;
+  if (activeEntries.length !== Object.keys(cache).length) setOwnBetCache(activeCache);
+  return activeCache;
+};
+
+const setOwnBetCache = (cache: Record<string, OwnEbetCacheEntry>) => GM_setValue(ownBetCacheKey, cache);
 
 const renderSideTooltip = (side?: EbetSideData) => {
   if (!side) return "ไม่มีข้อมูล";

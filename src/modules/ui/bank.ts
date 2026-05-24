@@ -5,6 +5,9 @@ import swal from "sweetalert2";
 const logger = createLogger("Bank");
 const settingData = await fetctSettingData();
 
+const maxBulkRequests = 100;
+const maxBulkMoneyAmount = 500000 * maxBulkRequests;
+const maxBulkUploadAmountMb = 1000000 * maxBulkRequests;
 const moneyChunks = [500000, 100000, 10000, 1000, 100, 10];
 const uploadChunks = [
   { value: "1TB", mb: 1000000 },
@@ -107,12 +110,16 @@ const runOriginalExchange = async (form: JQuery<HTMLFormElement>) => {
 
 const previewMoneyExchange = () => {
   const amount = parseNumber($("#bulkMoneyAmount").val()?.toString() ?? "");
+  if (amount > maxBulkMoneyAmount) return renderLimitPreview("#bulkMoneyPreview", maxBulkMoneyAmount, "Zen");
+
   const chunks = splitByChunks(amount, moneyChunks);
   renderPreview("#bulkMoneyPreview", amount, chunks.map((chunk) => `${chunk.toLocaleString()} Zen`));
 };
 
 const previewUploadExchange = () => {
   const amount = parseUploadAmount($("#bulkUploadAmount").val()?.toString() ?? "");
+  if (amount > maxBulkUploadAmountMb) return renderLimitPreview("#bulkUploadPreview", maxBulkUploadAmountMb, "MB");
+
   const chunks = splitUploadChunks(amount);
   renderPreview("#bulkUploadPreview", amount, chunks.map((chunk) => `${chunk.mb.toLocaleString()} MB`));
 };
@@ -129,8 +136,14 @@ const renderPreview = (selector: string, amount: number, chunks: string[]) => {
   $(selector).text(`${chunks.length} request: ${chunks.join(" + ")}`);
 };
 
+const renderLimitPreview = (selector: string, maxAmount: number, unit: string) => {
+  $(selector).text(`จำนวนมากเกินไป สูงสุด ${maxAmount.toLocaleString()} ${unit} ต่อครั้ง (${maxBulkRequests} request)`);
+};
+
 const runMoneyExchange = async () => {
   const amount = parseNumber($("#bulkMoneyAmount").val()?.toString() ?? "");
+  if (amount > maxBulkMoneyAmount) return setStatus(`จำนวนมากเกินไป สูงสุด ${maxBulkMoneyAmount.toLocaleString()} Zen ต่อครั้ง`);
+
   const chunks = splitByChunks(amount, moneyChunks);
   await runExchange(
     chunks.map((chunk) => ({ action: "moneytoupload", field: "money", value: `${chunk}Z`, amount: chunk })),
@@ -140,6 +153,8 @@ const runMoneyExchange = async () => {
 
 const runUploadExchange = async () => {
   const amount = parseUploadAmount($("#bulkUploadAmount").val()?.toString() ?? "");
+  if (amount > maxBulkUploadAmountMb) return setStatus(`จำนวนมากเกินไป สูงสุด ${maxBulkUploadAmountMb.toLocaleString()} MB ต่อครั้ง`);
+
   const chunks = splitUploadChunks(amount);
   await runExchange(
     chunks.map((chunk) => ({ action: "uploadtomoney", field: "upload", value: chunk.value, amount: chunk.mb })),
@@ -149,7 +164,7 @@ const runUploadExchange = async () => {
 
 const runExchange = async (jobs: { action: string; field: string; value: string; amount: number }[], label: string) => {
   if (jobs.length === 0) return setStatus("ไม่มีรายการให้แลก");
-  if (jobs.length > 100) return setStatus("จำนวน request มากเกินไป แบ่งแลกทีละไม่เกิน 100 request");
+  if (jobs.length > maxBulkRequests) return setStatus(`จำนวน request มากเกินไป แบ่งแลกทีละไม่เกิน ${maxBulkRequests} request`);
 
   const confirmed = await confirmExchange(jobs, label);
   if (!confirmed) return setStatus("ยกเลิกแล้ว");
@@ -205,9 +220,15 @@ const submitExchange = async (action: string, field: string, value: string) => {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const html = await res.text();
-  if (/มีไม่พอ|ไม่พอ|ไม่ถูกต้อง|error|ผิดพลาด/i.test(html)) {
-    throw new Error("exchange rejected");
-  }
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const alert = $(doc).find(".content-wrapper .mb-3 > .alert").first();
+  const title = alert.find("h4").first().text().trim().toLowerCase();
+  const message = alert.find(".text-muted").first().text().trim();
+
+  if (alert.hasClass("alert-success") || title === "success") return;
+  if (alert.hasClass("alert-warning") || title === "error") throw new Error(message || "exchange rejected");
+
+  throw new Error("exchange status not found");
 };
 
 const refreshBalances = async () => {
