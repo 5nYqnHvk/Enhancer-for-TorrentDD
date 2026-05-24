@@ -8,19 +8,17 @@ import {
 const settingData = await fetctSettingData();
 
 export const initBackground = async () => {
-  if (!settingData.farm.notificationFarm) return;
-  await farmNotification();
-  setInterval(
-    async () => await farmNotification(),
-    settingData.farm.farmUpdateInterval * 60 * 1000,
-  );
+  if (settingData.farm.notificationFarm) {
+    await farmNotification();
+  }
 
-  if (!settingData.ticket.notificationTicket) return;
-  await ticketNotification();
-  setInterval(
-    async () => await ticketNotification(),
-    settingData.ticket.ticketUpdateInterval * 60 * 1000,
-  );
+  if (settingData.ticket.notificationTicket) {
+    await ticketNotification();
+    setInterval(
+      async () => await ticketNotification(),
+      settingData.ticket.ticketUpdateInterval * 60 * 1000,
+    );
+  }
 };
 
 const farmNotification = async () => {
@@ -31,49 +29,55 @@ const farmNotification = async () => {
   );
   sound.volume = 0.4;
 
-  const now = new Date();
-  const lasted_notification = new Date(
-    farmNotificationDate + 1 * 60 * 60 * 1000,
-  );
-  if (now > lasted_notification) {
-    const getFarmData = await fetchFarmData(false);
-    let ready: number = getFarmData.quantityReady + getFarmData.quantitySpoiled;
-    if (ready >= settingData.farm.minPlotReadyForNotification) {
-      await sound.play();
+  const now = Date.now();
+  const getFarmData = await fetchFarmData(false);
+  let ready: number = getFarmData.quantityReady + getFarmData.quantitySpoiled;
+  if (
+    now > farmNotificationDate + 1 * 60 * 60 * 1000 &&
+    ready >= settingData.farm.minPlotReadyForNotification
+  ) {
+    await sound.play();
 
-      toastr.info(
-        `พบพืชที่โตเต็มที่แล้วจำนวน ${ready} ต้น`,
-        "ถึงเวลาเก็บเกี่ยว!",
-        {
-          closeButton: false,
-          debug: false,
-          newestOnTop: false,
-          progressBar: true,
-          positionClass: "toast-top-right",
-          preventDuplicates: false,
-          onclick: () => {
-            window.location.href = "farm.php";
-          },
-          showDuration: 300,
-          hideDuration: 300,
-          timeOut: 100000,
-          extendedTimeOut: 500,
-          showEasing: "swing",
-          hideEasing: "linear",
-          showMethod: "fadeIn",
-          hideMethod: "fadeOut",
+    toastr.info(
+      `พบพืชที่โตเต็มที่แล้วจำนวน ${ready} ต้น`,
+      "ถึงเวลาเก็บเกี่ยว!",
+      {
+        closeButton: false,
+        debug: false,
+        newestOnTop: false,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: () => {
+          window.location.href = "farm.php";
         },
-      );
+        showDuration: 300,
+        hideDuration: 300,
+        timeOut: 100000,
+        extendedTimeOut: 500,
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+      },
+    );
 
-      GM_notification({
-        text: `พบพืชที่โตเต็มที่แล้วจำนวน ${ready} ต้น`,
-        title: "ถึงเวลาเก็บเกี่ยว!",
-        url: "https://www.torrentdd.com/farm.php",
-      });
+    GM_notification({
+      text: `พบพืชที่โตเต็มที่แล้วจำนวน ${ready} ต้น`,
+      title: "ถึงเวลาเก็บเกี่ยว!",
+      url: "https://www.torrentdd.com/farm.php",
+    });
 
-      GM_setValue("farmNotificationDate", Date.now());
-    }
+    GM_setValue("farmNotificationDate", Date.now());
   }
+
+  const nextReady = getFarmData.plots
+    .filter((plot) => plot.status === "pending" && plot.harvestTime > now)
+    .map((plot) => plot.harvestTime)
+    .sort((a, b) => a - b)[0];
+  const fallbackDelay = settingData.farm.farmUpdateInterval * 60 * 1000;
+  const delay = nextReady ? Math.max(nextReady - now + 1000, 60 * 1000) : fallbackDelay;
+  setTimeout(() => void farmNotification(), delay);
 };
 
 const ticketNotification = async () => {

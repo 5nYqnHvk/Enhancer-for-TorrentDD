@@ -67,7 +67,7 @@ export const updateFarmButtons = () => {
   }
 };
 
-const placeSeed = async (plotId: number) => {
+const placeSeed = async (plotId: number, refresh = true) => {
   try {
     const place = await fetch(
       `https://www.torrentdd.com/farm.php?action=seed&ground=${plotId}`
@@ -110,7 +110,7 @@ const placeSeed = async (plotId: number) => {
       });
     }
 
-    await updateFarm();
+    if (refresh) await updateFarm();
   } catch (err) {
     toastr.error(`ปลูกพืชไม่สำเร็จกรุณาลองใหม่อีกครั้ง`, "Farm Module!", {
       closeButton: false,
@@ -132,17 +132,25 @@ const placeSeed = async (plotId: number) => {
   }
 };
 const placeSeedAll = async () => {
-  farmData.plots
-    .filter((plot) => plot.status === "empty")
-    .forEach((plot) => {
-      setTimeout(
-        async () => await placeSeed(plot.id),
-        Math.floor(Math.random() * 5) * 500
-      );
-    });
+  const plots = farmData.plots.filter((plot) => plot.status === "empty");
+  await Promise.all(
+    plots.map(
+      (plot) =>
+        new Promise<void>((resolve) => {
+          setTimeout(
+            async () => {
+              await placeSeed(plot.id, false);
+              resolve();
+            },
+            Math.floor(Math.random() * 5) * 500,
+          );
+        }),
+    ),
+  );
+  await updateFarm();
 };
 
-const gatherPlant = async (plotId: number) => {
+const gatherPlant = async (plotId: number, refresh = true) => {
   try {
     const place = await fetch(
       `https://www.torrentdd.com/farm.php?action=store&ground=${plotId}`
@@ -185,7 +193,7 @@ const gatherPlant = async (plotId: number) => {
       });
     }
 
-    await updateFarm();
+    if (refresh) await updateFarm();
   } catch (err) {
     toastr.error(`เก็บพืชไม่สำเร็จกรุณาลองใหม่อีกครั้ง`, "Farm Module!", {
       closeButton: false,
@@ -207,14 +215,24 @@ const gatherPlant = async (plotId: number) => {
   }
 };
 const gatherPlantAll = async () => {
-  farmData.plots
-    .filter((plot) => plot.status === "ready" || plot.status === "spoiled")
-    .forEach((plot) => {
-      setTimeout(
-        async () => await gatherPlant(plot.id),
-        Math.floor(Math.random() * 5) * 500
-      );
-    });
+  const plots = farmData.plots.filter(
+    (plot) => plot.status === "ready" || plot.status === "spoiled",
+  );
+  await Promise.all(
+    plots.map(
+      (plot) =>
+        new Promise<void>((resolve) => {
+          setTimeout(
+            async () => {
+              await gatherPlant(plot.id, false);
+              resolve();
+            },
+            Math.floor(Math.random() * 5) * 500,
+          );
+        }),
+    ),
+  );
+  await updateFarm();
 };
 
 const updateFarm = async () => {

@@ -13,25 +13,23 @@ export const initTicketModule = async () => {
   await initTicketButton();
 };
 
-const initTicketButton = async () => {
-  const ticket = await fetch("ticket.php");
-  const ticketBody = await ticket.text();
+const initTicketButton = async (refresh = false) => {
+  let root: JQuery<Document | HTMLElement> = $(document);
+  if (refresh) {
+    const ticket = await fetch("ticket.php");
+    const ticketBody = await ticket.text();
 
-  const dom = new DOMParser();
-  const parser = dom.parseFromString(ticketBody, "text/html");
+    const dom = new DOMParser();
+    const parser = dom.parseFromString(ticketBody, "text/html");
+    root = $(parser);
+  }
 
   ticketButton = $(".card-body.text-center").find("button");
-  tickets = Number(
-    $(parser)
-      .find(".card-body.text-center")
-      .find("button")
-      .text()
-      .split(" ")[1],
-  );
+  tickets = Number(root.find(".card-body.text-center").find("button").text().split(" ")[1]);
   ticketButton.off("click");
   logger.info(`ตั่วที่สามารถรับได้ ${tickets} ชิ้น`);
 
-  let latestRow = $(parser)
+  let latestRow = root
     .find("table tbody tr")
     .not(".table-secondary")
     .first();
@@ -109,7 +107,7 @@ const getTicket = async () => {
       ticketButton[0].disabled = true;
       break;
   }
-  await initTicketButton();
+  await initTicketButton(true);
 };
 
 const getNextRoundTime = (baseDate: Date) => {

@@ -30,41 +30,45 @@ import toastr from "toastr";
   logger.info(`------------------------------------`);
 
   const version = GM_info.script.version;
-  fetch(`https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js?r=${Date.now()}`)
-    .then(async (res) => await res.text())
-    .then((txt) => {
-      const versionMtch = txt.match(/\/\/ @version\s+(\d+\.\d+\.\d+)/);
-      if (versionMtch && versionMtch.length > 1) {
-        if (version != versionMtch[1]) {
-          logger.info(`ตรวจพบสคริปเวอร์ชันใหม่: ${versionMtch[1]}`);
-          toastr.info(
-            `เวอร์ชันใหม่: ${versionMtch[1]}<br>เวอร์ชันปัจจุบัน: ${version}`,
-            "ตรวจพบสคริปเวอร์ชันใหม่!",
-            {
-              closeButton: false,
-              debug: false,
-              newestOnTop: false,
-              progressBar: true,
-              positionClass: "toast-top-right",
-              preventDuplicates: false,
-              onclick: () => {
-                window.open(
-                  "https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js",
-                );
+  const lastVersionCheck = await GM_getValue("lastVersionCheck", 0);
+  if (Date.now() - lastVersionCheck > 6 * 60 * 60 * 1000) {
+    await GM_setValue("lastVersionCheck", Date.now());
+    fetch("https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js")
+      .then(async (res) => await res.text())
+      .then((txt) => {
+        const versionMtch = txt.match(/\/\/ @version\s+(\d+\.\d+\.\d+)/);
+        if (versionMtch && versionMtch.length > 1) {
+          if (version != versionMtch[1]) {
+            logger.info(`ตรวจพบสคริปเวอร์ชันใหม่: ${versionMtch[1]}`);
+            toastr.info(
+              `เวอร์ชันใหม่: ${versionMtch[1]}<br>เวอร์ชันปัจจุบัน: ${version}`,
+              "ตรวจพบสคริปเวอร์ชันใหม่!",
+              {
+                closeButton: false,
+                debug: false,
+                newestOnTop: false,
+                progressBar: true,
+                positionClass: "toast-top-right",
+                preventDuplicates: false,
+                onclick: () => {
+                  window.open(
+                    "https://raw.githubusercontent.com/5nyqnhvk/Enhancer-for-TorrentDD/main/index.user.js",
+                  );
+                },
+                showDuration: 300,
+                hideDuration: 300,
+                timeOut: 2000,
+                extendedTimeOut: 500,
+                showEasing: "swing",
+                hideEasing: "linear",
+                showMethod: "fadeIn",
+                hideMethod: "fadeOut",
               },
-              showDuration: 300,
-              hideDuration: 300,
-              timeOut: 2000,
-              extendedTimeOut: 500,
-              showEasing: "swing",
-              hideEasing: "linear",
-              showMethod: "fadeIn",
-              hideMethod: "fadeOut",
-            },
-          );
+            );
+          }
         }
-      }
-    });
+      });
+  }
 
   await initSettingModule();
   await initBackground();
