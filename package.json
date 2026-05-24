@@ -7,6 +7,7 @@
     "postversion": "git push --follow-tags",
     "analyse": "npm_config_report=true npm run build",
     "watch": "webpack --mode=development --watch",
+    "serve:dev": "python3 -m http.server 8787 --bind 127.0.0.1",
     "build": "webpack --mode=production --node-env=production",
     "dev": "webpack --mode=development"
   },
