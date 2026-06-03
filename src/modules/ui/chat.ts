@@ -96,7 +96,7 @@ const bossIframe = () => {
     if (chat.us_id === 0 && chat.us_class === 0 && chat.us_icon === 100) {
       if (chat.message.includes("Monster บุกเว็บ ต้องการผู้กล้าด่วน!! [url=https://www.torrentdd.com/boss.php](เข้าร่วม!)[/url]")) {
           const iframe = $(".chat-video iframe");
-          iframe.attr("src", "/boss.php");
+          iframe.attr("src", "https://www.torrentdd.com/boss.php");
           iframe.on("load", () => {
             $(".chat-container").addClass("mini");
             // remove unused div
