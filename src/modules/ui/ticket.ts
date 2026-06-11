@@ -13,6 +13,8 @@ export const initTicketModule = async () => {
   await initTicketButton();
 };
 
+let ticketTimer: ReturnType<typeof setInterval> | null = null;
+
 const initTicketButton = async (refresh = false) => {
   let root: JQuery<Document | HTMLElement> = $(document);
   if (refresh) {
@@ -45,17 +47,25 @@ const initTicketButton = async (refresh = false) => {
     .first();
   let latestTime = latestRow.find("td:eq(2)").text().trim();
   let lastDate = new Date(latestTime.replace(" ", "T"));
+  if (isNaN(lastDate.getTime())) {
+    ticketButton.html(`รับตั๋วสุ่มกาชา ${tickets} ชิ้น`).addClass("btn-success").removeClass("btn-danger").prop("disabled", false);
+    ticketButton.off("click").on("click", async () => await getTicket());
+    return;
+  }
   let nextRound = getNextRoundTime(lastDate);
 
-  let timer = setInterval(() => {
+  if (ticketTimer) { clearInterval(ticketTimer); ticketTimer = null; }
+
+  let timer = ticketTimer = setInterval(() => {
     let diff = nextRound.getTime() - Date.now();
     if (diff <= 0) {
       clearInterval(timer);
+      ticketTimer = null;
       ticketButton.html(`รับตั๋วสุ่มกาชา ${tickets} ชิ้น`);
       ticketButton.addClass("btn-success");
       ticketButton.removeClass("btn-danger");
       ticketButton.prop("disabled", false);
-      ticketButton[0].addEventListener("click", async () => await getTicket());
+      ticketButton.off("click").on("click", async () => await getTicket());
       return;
     }
 

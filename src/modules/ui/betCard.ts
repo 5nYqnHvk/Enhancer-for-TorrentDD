@@ -474,6 +474,9 @@ const scanBoardHistory = async () => {
   const parser = new DOMParser();
   const records = new Map<string, BoardRecord>();
 
+  // seed with the already-loaded current page (page 1 = newest records)
+  parseBoardRecords(document).forEach((record) => records.set(record.id, record));
+
   button.prop("disabled", true);
   try {
     for (let page = 1; page <= pages; page++) {
@@ -637,14 +640,8 @@ const bet = async (id: number) => {
   }
 
   let targetUsername = $(doc).find("tbody:eq(1) td:eq(5) a").text();
-  let targetCard = $(doc)
-    .find("tbody:eq(1) td:eq(0) img")
-    .attr("src")
-    .split("/")[2];
-  let yourCard = $(doc)
-    .find("tbody:eq(1) td:eq(2) img")
-    .attr("src")
-    .split("/")[2];
+  let targetCard = $(doc).find("tbody:eq(1) td:eq(0) img").attr("src")?.split("/")[2] ?? "";
+  let yourCard = $(doc).find("tbody:eq(1) td:eq(2) img").attr("src")?.split("/")[2] ?? "";
   let resultMatch = $(doc).find("tbody:eq(1) td:eq(1) h4:eq(1)").first().text();
   let MatchPrice = $(doc).find("tbody:eq(1) td:eq(1) h5").first().text();
 

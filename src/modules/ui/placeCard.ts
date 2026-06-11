@@ -23,6 +23,7 @@ let placeBetPrice: string = null;
 
 let placeBetTimer: number | null = null;
 let isBetting = false;
+let stopped = false;
 
 export const initPlaceCardModule = async () => {
   if (!settingData.betcard.enabledPlaceCardModule) return;
@@ -192,6 +193,7 @@ const startTimer = () => {
     return;
   }
 
+  stopped = false;
   loadSetting();
   $(autoBetButton).text("หยุดวางไพ่");
   $(statusBet).html("สถานะ: กำลังทำงาน");
@@ -199,6 +201,7 @@ const startTimer = () => {
 };
 
 const stopTimer = () => {
+  stopped = true;
   resetCounter();
   if (placeBetTimer != null) clearTimeout(placeBetTimer);
   placeBetTimer = null;
@@ -243,8 +246,9 @@ const bet = async () => {
       const body = await res.text();
 
       if (body === "success") {
+        counter++;
         logger.debug(
-          `คุณวางไพ่แล้ว ${counter + 1}/${betNum} : ${placeBetPrice} Zen`,
+          `คุณวางไพ่แล้ว ${counter}/${betNum} : ${placeBetPrice} Zen`,
         );
         await toastr.success(
           "จำนวนเงินที่วาง " + placeBetPrice + " Zen",
@@ -306,10 +310,10 @@ const bet = async () => {
       toastr.error("เกิดข้อผิดพลาดในการเชื่อมต่อ", "Error");
       logger.error("เกิดข้อผิดพลาดในการเชื่อมต่อ", err);
     }
-    counter++;
   }
   isBetting = false;
-  if (counter >= betNum || placeBetArray.length === 0) {
+  if (stopped) return;
+  if (counter >= betNum) {
     stopTimer();
   } else {
     scheduleNextBet();

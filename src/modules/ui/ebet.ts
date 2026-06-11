@@ -1,3 +1,4 @@
+import swal from "sweetalert2";
 import { createLogger } from "../../utils/logger";
 import { fetchUserData, fetctSettingData } from "../data/fetchData";
 import { UserData } from "../data/models";
@@ -170,6 +171,7 @@ const fetchMatchData = (detailUrl: string) => {
 
 const loadMatchData = async (detailUrl: string): Promise<EbetMatchData> => {
   const res = await fetch(detailUrl);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const html = await res.text();
   const doc = new DOMParser().parseFromString(html, "text/html");
   const sides: Record<string, EbetSideData> = {};

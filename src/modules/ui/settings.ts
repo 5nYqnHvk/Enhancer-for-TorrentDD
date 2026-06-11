@@ -264,6 +264,76 @@ const initSettingButton = () => {
         </div>
         <hr />
 
+        <!-- grp home -->
+        <h6 class="text-primary mb-2">หน้าหลัก</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledHomeModule">
+                <input type="checkbox" class="form-check-input" id="enabledHomeModule" ${
+                  settingData.home.enabledHomeModule ? "checked" : ""
+                } />
+                แสดง Dashboard widget หน้า Home <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
+        <!-- grp ranking -->
+        <h6 class="text-primary mb-2">อันดับ</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledRankingModule">
+                <input type="checkbox" class="form-check-input" id="enabledRankingModule" ${
+                  settingData.ranking.enabledRankingModule ? "checked" : ""
+                } />
+                เปิดใช้งาน Ranking snapshot &amp; compare <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
+        <!-- grp market -->
+        <h6 class="text-primary mb-2">ตลาด</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledMarketModule">
+                <input type="checkbox" class="form-check-input" id="enabledMarketModule" ${
+                  settingData.market.enabledMarketModule ? "checked" : ""
+                } />
+                เปิดใช้งาน Market filter bar <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledMarketplaceModule">
+                <input type="checkbox" class="form-check-input" id="enabledMarketplaceModule" ${
+                  settingData.marketplace.enabledMarketplaceModule ? "checked" : ""
+                } />
+                เปิดใช้งาน Marketplace sort &amp; filter <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
+        <!-- grp inbox/inventory -->
+        <h6 class="text-primary mb-2">Inbox &amp; Inventory</h6>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledInboxModule">
+                <input type="checkbox" class="form-check-input" id="enabledInboxModule" ${
+                  settingData.inbox.enabledInboxModule ? "checked" : ""
+                } />
+                เปิดใช้งาน Inbox bulk delete &amp; search <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check form-check-flat">
+            <label class="form-check-label" for="enabledInventoryModule">
+                <input type="checkbox" class="form-check-input" id="enabledInventoryModule" ${
+                  settingData.inventory.enabledInventoryModule ? "checked" : ""
+                } />
+                เปิดใช้งาน Inventory sort &amp; filter <i class="input-helper"></i></label>
+            </div>
+        </div>
+        <hr />
+
         <!-- grp bank -->
         <h6 class="text-primary mb-2">ระบบ Bank</h6>
         <div class="form-group">
@@ -372,12 +442,11 @@ const initSettingButton = () => {
       settingData.torrent.showDownloadButton = $("#showDownloadButton").prop(
         "checked",
       );
-      settingData.torrent.updatePeerslist =
-        $("#updatePeerslist").prop("checked");
+      settingData.torrent.updatePeerslist = settingData.torrent.updatePeerslist;
 
       settingData.farm.enabledFarmModule =
         $("#enabledFarmModule").prop("checked");
-      settingData.farm.autoFarm = $("#autoFarm").prop("checked");
+      settingData.farm.autoFarm = settingData.farm.autoFarm;
       settingData.farm.notificationFarm =
         $("#notificationFarm").prop("checked");
       settingData.farm.farmUpdateInterval =
@@ -388,7 +457,7 @@ const initSettingButton = () => {
       settingData.ticket.enabledTicketModule = $("#enabledTicketModule").prop(
         "checked",
       );
-      settingData.ticket.autoTicket = $("#autoTicket").prop("checked");
+      settingData.ticket.autoTicket = settingData.ticket.autoTicket;
       settingData.ticket.notificationTicket = $("#notificationTicket").prop(
         "checked",
       );
@@ -416,6 +485,13 @@ const initSettingButton = () => {
       settingData.ebet.enabledHoverDetails = $("#enabledHoverDetails").prop("checked");
 
       settingData.bank.enabledBankModule = $("#enabledBankModule").prop("checked");
+
+      settingData.home.enabledHomeModule = $("#enabledHomeModule").prop("checked");
+      settingData.ranking.enabledRankingModule = $("#enabledRankingModule").prop("checked");
+      settingData.market.enabledMarketModule = $("#enabledMarketModule").prop("checked");
+      settingData.inbox.enabledInboxModule = $("#enabledInboxModule").prop("checked");
+      settingData.inventory.enabledInventoryModule = $("#enabledInventoryModule").prop("checked");
+      settingData.marketplace.enabledMarketplaceModule = $("#enabledMarketplaceModule").prop("checked");
 
       settingData.chat.enabledChatModule =
         $("#enabledChatModule").prop("checked");
@@ -579,6 +655,13 @@ const updateSettings = async () => {
   $("#enabledHoverDetails").prop("checked", settingData.ebet.enabledHoverDetails);
 
   $("#enabledBankModule").prop("checked", settingData.bank.enabledBankModule);
+
+  $("#enabledHomeModule").prop("checked", settingData.home.enabledHomeModule);
+  $("#enabledRankingModule").prop("checked", settingData.ranking.enabledRankingModule);
+  $("#enabledMarketModule").prop("checked", settingData.market.enabledMarketModule);
+  $("#enabledInboxModule").prop("checked", settingData.inbox.enabledInboxModule);
+  $("#enabledInventoryModule").prop("checked", settingData.inventory.enabledInventoryModule);
+  $("#enabledMarketplaceModule").prop("checked", settingData.marketplace.enabledMarketplaceModule);
 
   $("#enabledChatModule").prop("checked", settingData.chat.enabledChatModule);
   $("#enabledIframeBoss").prop("checked", settingData.chat.enabledIframeBoss);

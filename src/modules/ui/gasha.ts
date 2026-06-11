@@ -1,3 +1,4 @@
+import toastr from "toastr";
 import { getLocation } from "../../utils/hook";
 import { createLogger } from "../../utils/logger";
 import swal from "sweetalert2";
@@ -13,9 +14,13 @@ export const initGashaModule = async () => {
   if (settingData.gasha.showGashaLog) await initGashaLog();
 
   unsafeWindow.fetchCaseData = async (action = false) => {
+    const boxName = getGashaType();
+    const btnOpen = document.getElementById("btn-open") as HTMLButtonElement | null;
+    const btnOpenDemo = document.getElementById("btn-open-demo") as HTMLButtonElement | null;
+    const resultArea = document.getElementById("result-area");
     try {
       const res = await fetch(
-        `app/gasha/api.php?box_name=${BOX_NAME}${action === true ? "&open_box=" + action : ""}`,
+        `app/gasha/api.php?box_name=${boxName}${action === true ? "&open_box=" + action : ""}`,
       );
       if (!res.ok) throw new Error("Failed to fetch case data");
       const data = await res.json();
@@ -26,7 +31,7 @@ export const initGashaModule = async () => {
           toastr.success(itemName, "คุณหมุนกาชาได้รับ");
           if (settingData.gasha.saveGashaLog) {
             saveGashaData({
-              type: BOX_NAME as GashaData["type"],
+              type: boxName as GashaData["type"],
               cls: data.data.final_item.class,
               txt: itemName,
               img: data.data.final_item.img,
@@ -41,13 +46,15 @@ export const initGashaModule = async () => {
         logger.warn("Gashapon API rejected request", data.error);
         toastr.error(data.error, "Gashapon");
       }
+      if (btnOpen) btnOpen.disabled = false;
+      if (btnOpenDemo) btnOpenDemo.disabled = false;
       return data;
     } catch (err) {
       logger.error("โหลดข้อมูลกาชาไม่สำเร็จ", err);
       toastr.error("โหลดข้อมูลไม่สำเร็จ", "Gashapon");
-      resultArea.textContent = "โหลดข้อมูลไม่สำเร็จ";
-      btnOpen.disabled = false;
-      btnOpenDemo.disabled = false;
+      if (resultArea) resultArea.textContent = "โหลดข้อมูลไม่สำเร็จ";
+      if (btnOpen) btnOpen.disabled = false;
+      if (btnOpenDemo) btnOpenDemo.disabled = false;
       return null;
     }
   };

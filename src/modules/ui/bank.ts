@@ -110,17 +110,15 @@ const runOriginalExchange = async (form: JQuery<HTMLFormElement>) => {
 
 const previewMoneyExchange = () => {
   const amount = parseNumber($("#bulkMoneyAmount").val()?.toString() ?? "");
-  if (amount > maxBulkMoneyAmount) return renderLimitPreview("#bulkMoneyPreview", maxBulkMoneyAmount, "Zen");
-
   const chunks = splitByChunks(amount, moneyChunks);
+  if (chunks.length > maxBulkRequests) return renderLimitPreview("#bulkMoneyPreview", maxBulkMoneyAmount, "Zen");
   renderPreview("#bulkMoneyPreview", amount, chunks.map((chunk) => `${chunk.toLocaleString()} Zen`));
 };
 
 const previewUploadExchange = () => {
   const amount = parseUploadAmount($("#bulkUploadAmount").val()?.toString() ?? "");
-  if (amount > maxBulkUploadAmountMb) return renderLimitPreview("#bulkUploadPreview", maxBulkUploadAmountMb, "MB");
-
   const chunks = splitUploadChunks(amount);
+  if (chunks.length > maxBulkRequests) return renderLimitPreview("#bulkUploadPreview", maxBulkUploadAmountMb, "MB");
   renderPreview("#bulkUploadPreview", amount, chunks.map((chunk) => `${chunk.mb.toLocaleString()} MB`));
 };
 

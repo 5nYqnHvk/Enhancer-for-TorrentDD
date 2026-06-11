@@ -61,7 +61,11 @@ export const initChatModule = () => {
                     $('#chat-input').val('กำลังอัพโหลด..').prop('disabled', true);
                 },
                 success: function(response) {
-                    const data = JSON.parse(response);
+                    let data: any;
+                    try { data = JSON.parse(response); } catch {
+                        $('#chat-input').val('').prop('disabled', false);
+                        return;
+                    }
                     if (data.type === 'success') {
                         const url = `${atob('aHR0cHM6Ly93d3cuaS1waWMuaW5mby9pLw==')}${data.data.id}.${type}`;
                         $('#chat-input').val(url).prop('disabled', false);
@@ -96,9 +100,9 @@ const bossIframe = () => {
     if (chat.us_id === 0 && chat.us_class === 0 && chat.us_icon === 100) {
       if (chat.message.includes("Monster บุกเว็บ ต้องการผู้กล้าด่วน!! [url=https://www.torrentdd.com/boss.php](เข้าร่วม!)[/url]")) {
           const iframe = $(".chat-video iframe");
-          iframe.attr("src", "https://www.torrentdd.com/boss.php");
-          iframe.on("load", () => {
+          iframe.off("load").one("load", () => {
             $(".chat-container").addClass("mini");
+            $(".chat-video").show();
             // remove unused div
             $(iframe).contents().find(".alert").remove()
             $(iframe).contents().find(".mb-2").remove()
@@ -108,8 +112,9 @@ const bossIframe = () => {
             $(iframe).contents().find("footer").remove()
             let body = $(iframe).contents().find("body");
             body.scrollTop(body[0].scrollHeight);
-            watchBossIframe(iframe[0] as HTMLIFrameElement);
+            setTimeout(() => watchBossIframe(iframe[0] as HTMLIFrameElement), 300);
           });
+          iframe.attr("src", "https://www.torrentdd.com/boss.php");
       }
     }
   });
@@ -172,6 +177,7 @@ const closeBossIframe = () => {
   unsafeWindow.bossAttackTimer && clearTimeout(unsafeWindow.bossAttackTimer);
   unsafeWindow.bossAttackTimer = undefined;
   $(".chat-video iframe").attr("src", "");
+  $(".chat-video").hide();
   $(".chat-container").removeClass("mini");
 };
 
@@ -195,9 +201,20 @@ const watchBossIframe = (iframe: HTMLIFrameElement) => {
 };
 
 const optimizeChatRuntime = () => {
+  if (!$("#enhancer-chat-style").length)
+    $("head").append(`<style id="enhancer-chat-style">
+      .enhancer-chat-thread { width: 100%; border-radius: 4px; transition: background .15s; }
+    </style>`);
+  // wrap existing messages
+  $(".chat-screen > .box-msg").not(".enhancer-wrapped").each(function() {
+    $(this).addClass("enhancer-wrapped").wrap("<div class='enhancer-chat-thread'></div>");
+  });
+  $(document)
+    .off(".boxmsg")
+    .on("mouseover.boxmsg", ".enhancer-chat-thread", function() { this.style.setProperty("background", "rgba(0,0,0,.08)", "important"); })
+    .on("mouseout.boxmsg", ".enhancer-chat-thread", function() { this.style.removeProperty("background"); });
   initChatImagePreviewStyle();
   bindChatImagePreview();
-  if (settingData.chat.enabledImagePreview) appendImagePreviews($(".box-msg"));
   if ($.fn.tooltip) $('[data-toggle="tooltip"]').tooltip();
 
   let lastRadio = "";
@@ -239,7 +256,9 @@ const optimizeChatRuntime = () => {
     });
     if (settingData.chat.enabledImagePreview) appendImagePreviews(items);
 
-    $(".chat-screen").append(items);
+    items.each(function() {
+      $(".chat-screen").append($("<div class='enhancer-chat-thread'></div>").append(this));
+    });
     removeTextchat();
     chatScroll();
   };

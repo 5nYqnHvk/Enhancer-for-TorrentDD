@@ -8,7 +8,10 @@ export const parseTorrentFromUint8 = (
   let infoStart: number | null = null;
   let infoEnd: number | null = null;
 
-  const readChar = (): string => String.fromCharCode(u8[pos]);
+  const readChar = (): string => {
+    if (pos >= u8.length) throw new Error("unexpected end of torrent data");
+    return String.fromCharCode(u8[pos]);
+  };
 
   const parseElement = (): any => {
     const c = readChar();

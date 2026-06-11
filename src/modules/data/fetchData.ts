@@ -6,6 +6,7 @@ import {
   UserData,
   Settings,
   TicketData,
+  ProfileData,
 } from "./models";
 
 export const fetchUserData = async (): Promise<UserData> => {
@@ -61,6 +62,42 @@ const getUserClassId = (): number => {
   ];
 
   return className.indexOf(userClassId);
+};
+
+export const fetchProfileData = async (): Promise<ProfileData> => {
+  const userId = Number(
+    $("a[href^='mypeers.php?userid=']").attr("href")?.replace("mypeers.php?userid=", "")
+  );
+  const res = await fetch(`https://www.torrentdd.com/userdetails.php?id=${userId}`);
+  const html = await res.text();
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const $doc = $(doc);
+
+  const td = (label: string) =>
+    $doc.find("td").filter((_, el) => $(el).text().trim().replace(/\s+/g, " ") === label).first().next("td").text().trim();
+
+  const parseGB = (text: string) => {
+    const m = text.match(/([\d.]+)\s*(TB|GB)/i);
+    if (!m) return 0;
+    return m[2].toUpperCase() === "TB" ? parseFloat(m[1]) * 1024 : parseFloat(m[1]);
+  };
+
+  const joinText = td("Join date") || td("Join date");
+  const weeksMatch = joinText.match(/\((\d+)\s*weeks?\s*ago\)/);
+  const dateStr = joinText.split(" ")[0];
+  const weeksJoined = weeksMatch
+    ? parseInt(weeksMatch[1])
+    : /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
+      ? Math.floor((Date.now() - new Date(dateStr).getTime()) / (7 * 86400000))
+      : 0;
+
+  return {
+    realUploadGB: parseGB(td("Real Upload")),
+    fileUpload: parseInt(td("File Upload")) || 0,
+    ratio: parseFloat(td("Share ratio")) || 0,
+    weeksJoined,
+    currentClass: td("Class").trim().toLowerCase(),
+  };
 };
 
 export const fetchFarmData = async (getResText: boolean): Promise<FarmData> => {
@@ -185,13 +222,28 @@ export const fetchTicketData = async (): Promise<TicketData> => {
 
   const dom = new DOMParser();
   const parser = dom.parseFromString(ticketBody, "text/html");
-  const ticketButton = $(parser).find(".card-body.text-center").find("button");
-  const tickets = Number(ticketButton.text().split(" ")[1]);
+  const $p = $(parser);
+  const ticketButton = $p.find(".card-body.text-center").find("button");
+  const tickets = Number(ticketButton.text().match(/(\d+)\s*ชิ้น/)?.[1] ?? 0);
+  const ready = ticketButton[0].disabled === false && tickets > 0;
 
-  return {
-    ready: ticketButton[0].disabled === false && tickets > 0 ? true : false,
-    quantityReady: tickets,
-  };
+  let nextMs = 0;
+  if (!ready) {
+    const lastTime = $p.find("table tbody tr").not(".table-secondary").first().find("td:eq(2)").text().trim();
+    const lastDate = new Date(lastTime.replace(" ", "T"));
+    if (!isNaN(lastDate.getTime())) {
+      const next = new Date(lastDate);
+      if (lastDate.getHours() < 12) {
+        next.setHours(12, 0, 0, 0);
+      } else {
+        next.setDate(lastDate.getDate() + 1);
+        next.setHours(0, 0, 0, 0);
+      }
+      nextMs = Math.max(0, next.getTime() - Date.now());
+    }
+  }
+
+  return { ready, quantityReady: tickets, nextMs };
 };
 
 const defaultSettingData: Settings = {
@@ -242,6 +294,24 @@ const defaultSettingData: Settings = {
   },
   others: {
     notificationSound: "noti.mp3",
+  },
+  home: {
+    enabledHomeModule: true,
+  },
+  ranking: {
+    enabledRankingModule: true,
+  },
+  market: {
+    enabledMarketModule: true,
+  },
+  inbox: {
+    enabledInboxModule: true,
+  },
+  inventory: {
+    enabledInventoryModule: true,
+  },
+  marketplace: {
+    enabledMarketplaceModule: true,
   },
 };
 

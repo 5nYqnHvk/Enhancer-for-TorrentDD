@@ -9,6 +9,7 @@ const config = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.user.js",
+    publicPath: "",
   },
   devServer: {
     open: true,
@@ -35,6 +36,8 @@ const config = {
     extensions: [".ts", ".js"],
   },
   optimization: {
+    splitChunks: false,
+    runtimeChunk: false,
     minimize: true,
     minimizer: [
       new TerserPlugin({

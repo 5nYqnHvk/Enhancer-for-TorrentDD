@@ -25,6 +25,7 @@ export interface FarmData {
 export interface TicketData {
   ready: boolean;
   quantityReady: number;
+  nextMs: number; // 0 = ready now
 }
 
 export interface TorrentSettings {
@@ -84,6 +85,30 @@ export interface OtherSettings {
   notificationSound: string;
 }
 
+export interface HomeSettings {
+  enabledHomeModule: boolean;
+}
+
+export interface RankingSettings {
+  enabledRankingModule: boolean;
+}
+
+export interface MarketSettings {
+  enabledMarketModule: boolean;
+}
+
+export interface InboxSettings {
+  enabledInboxModule: boolean;
+}
+
+export interface InventorySettings {
+  enabledInventoryModule: boolean;
+}
+
+export interface MarketplaceSettings {
+  enabledMarketplaceModule: boolean;
+}
+
 export interface Settings {
   torrent: TorrentSettings;
   farm: FarmSettings;
@@ -94,6 +119,20 @@ export interface Settings {
   bank: BankSettings;
   chat: ChatSettings;
   others: OtherSettings;
+  home: HomeSettings;
+  ranking: RankingSettings;
+  market: MarketSettings;
+  inbox: InboxSettings;
+  inventory: InventorySettings;
+  marketplace: MarketplaceSettings;
+}
+
+export interface ProfileData {
+  realUploadGB: number;
+  fileUpload: number;
+  ratio: number;
+  weeksJoined: number;
+  currentClass: string;
 }
 
 export interface UserInfo {

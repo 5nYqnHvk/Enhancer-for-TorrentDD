@@ -9,6 +9,7 @@ const settingData = await fetctSettingData();
 let farmData: FarmData;
 let buyAllBtn: JQuery<HTMLElement>;
 let harvestAllBtn: JQuery<HTMLElement>;
+const farmTimers: number[] = [];
 
 export const initFarmModule = async () => {
   if (!settingData.farm.enabledFarmModule) return;
@@ -134,13 +135,13 @@ const placeSeed = async (plotId: number, refresh = true) => {
 };
 const placeSeedAll = async () => {
   const plots = farmData.plots.filter((plot) => plot.status === "empty");
-  await Promise.all(
+  await Promise.allSettled(
     plots.map(
       (plot) =>
         new Promise<void>((resolve) => {
           setTimeout(
             async () => {
-              await placeSeed(plot.id, false);
+              await placeSeed(plot.id, false).catch(() => {});
               resolve();
             },
             Math.floor(Math.random() * 5) * 500,
@@ -220,13 +221,13 @@ const gatherPlantAll = async () => {
   const plots = farmData.plots.filter(
     (plot) => plot.status === "ready" || plot.status === "spoiled",
   );
-  await Promise.all(
+  await Promise.allSettled(
     plots.map(
       (plot) =>
         new Promise<void>((resolve) => {
           setTimeout(
             async () => {
-              await gatherPlant(plot.id, false);
+              await gatherPlant(plot.id, false).catch(() => {});
               resolve();
             },
             Math.floor(Math.random() * 5) * 500,
@@ -241,6 +242,9 @@ const updateFarm = async () => {
   try {
     farmData = await fetchFarmData(true);
     updateFarmButtons();
+
+    // clear all previous plot timers before replacing DOM
+    farmTimers.splice(0).forEach(clearInterval);
 
     const dom = new DOMParser();
     const parser = dom.parseFromString(farmData.resText, "text/html");
@@ -327,8 +331,9 @@ const startFarmTimer = (selector: HTMLElement) => {
   let totalSeconds = days * 86400 + hours * 3600 + minutes * 60 + seconds;
 
   // ตั้ง interval เดินเวลา
-  setInterval(() => {
-    totalSeconds++;
+  farmTimers.push(setInterval(() => {
+    if (totalSeconds <= 0) return;
+    totalSeconds--;
 
     const d = Math.floor(totalSeconds / 86400);
     const h = Math.floor((totalSeconds % 86400) / 3600);
@@ -340,5 +345,5 @@ const startFarmTimer = (selector: HTMLElement) => {
         .toString()
         .padStart(2, "0")}:${s.toString().padStart(2, "0")}`
     );
-  }, 1000);
+  }, 1000));
 };
