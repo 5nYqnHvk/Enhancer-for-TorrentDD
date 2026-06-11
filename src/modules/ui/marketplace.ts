@@ -169,6 +169,7 @@ const loadAllAndRender = async () => {
     const slice = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
     const sliceSet = new Set(slice.map(i => i.$col[0]));
     allItems.forEach(i => { if (sliceSet.has(i.$col[0])) i.$col.show(); else i.$col.hide(); });
+    slice.forEach(i => $row.append(i.$col));
     $("#tdd-nft-count").text(`${total} รายการ`);
 
     renderPagination($(".tdd-nft-pager"), total, currentPage, PAGE_SIZE, (p) => {

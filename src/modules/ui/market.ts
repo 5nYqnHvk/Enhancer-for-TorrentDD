@@ -102,8 +102,10 @@ const injectFilterBar = () => {
   const renderPage = () => {
     const total = filteredItems.length;
     const start = (currentPage - 1) * PAGE_SIZE;
-    const visible = new Set(filteredItems.slice(start, start + PAGE_SIZE));
+    const page = filteredItems.slice(start, start + PAGE_SIZE);
+    const visible = new Set(page);
     $boxes.each((_, el) => $(el).toggle(visible.has(el as HTMLElement)));
+    page.forEach(el => $container.append(el));
     $("#tdd-mkt-count").text(`${total} รายการ`);
     renderPagination($(".tdd-mkt-pager"), total, currentPage, PAGE_SIZE, (p) => {
       currentPage = p;
